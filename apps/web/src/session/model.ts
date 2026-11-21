@@ -1,5 +1,5 @@
 import type { MeDto } from "@price-watch/contract";
-import { createEffect, createEvent, createStore, sample } from "effector";
+import { createEffect, createEvent, createStore, restore, sample } from "effector";
 
 import { apiCommand, apiRequest, ApiRequestError } from "../shared/api";
 
@@ -8,7 +8,6 @@ export type SessionStatus = "loading" | "signed_out" | "no_account" | "error" | 
 export const appStarted = createEvent();
 export const meRefreshRequested = createEvent();
 export const signOutClicked = createEvent();
-export const timeZoneSaved = createEvent<string>();
 
 export const meFx = createEffect(async () => {
   // get-session answers 200 null when signed out, so a visitor causes no 401 in the console.
@@ -39,7 +38,10 @@ export const saveTimeZoneFx = createEffect((timeZone: string) => {
 
 export const $me = createStore<MeDto | null>(null);
 export const $sessionStatus = createStore<SessionStatus>("loading");
-export const $sessionError = createStore("");
+export const $sessionError = restore(
+  meFx.failData.map((error) => error.message),
+  "",
+);
 
 // #region load
 sample({
@@ -61,18 +63,7 @@ sample({
 sample({
   clock: meFx.failData,
   fn: getFailedSessionStatus,
-  target: $sessionStatus,
-});
-
-sample({
-  clock: meFx.failData,
-  fn: (error) => error.message,
-  target: $sessionError,
-});
-
-sample({
-  clock: meFx.failData,
-  target: $me.reinit,
+  target: [$sessionStatus, $me.reinit],
 });
 // #endregion
 
@@ -86,12 +77,11 @@ sample({
 
 sample({
   clock: saveTimeZoneFx.done,
-  fn: ({ params }) => params,
-  target: timeZoneSaved,
-});
-
-$me.on(timeZoneSaved, (me, timeZone) => {
-  return me === null ? null : { ...me, timeZone };
+  source: $me,
+  fn: (me, { params }) => {
+    return me === null ? null : { ...me, timeZone: params };
+  },
+  target: $me,
 });
 // #endregion
 
