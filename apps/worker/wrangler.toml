@@ -74,7 +74,7 @@ simple = { limit = 30, period = 60 }
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "price-watch"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "5c552022-b3c1-4cff-abca-366900d10c31"
 migrations_dir = "migrations"
 
 [env.production.triggers]
@@ -88,4 +88,4 @@ PADDLE_ENV = "production"
 PADDLE_CLIENT_TOKEN = "REPLACE_WITH_PADDLE_CLIENT_TOKEN"
 PADDLE_PRICE_STARTER = "REPLACE_WITH_PRICE_ID"
 PADDLE_PRICE_PRO = "REPLACE_WITH_PRICE_ID"
-OWNER_ALERT_EMAIL = "REPLACE_WITH_OWNER_EMAIL"
+OWNER_ALERT_EMAIL = "alerts@spacesonlabs.com"
