@@ -64,3 +64,9 @@ export const EXPORT_CSV_COLUMNS = [
   "change_percent",
   "recorded_at",
 ] as const;
+
+export const SIGN_IN_OPTIONS_PATH = "/api/sign-in-options";
+
+export type SignInOptionsDto = {
+  google: boolean;
+};

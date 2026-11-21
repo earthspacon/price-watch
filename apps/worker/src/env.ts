@@ -20,3 +20,7 @@ export type Env = {
   AUTH_LIMITER: RateLimit;
   LINKS_LIMITER: RateLimit;
 };
+
+export function isDev(env: Env) {
+  return env.DEV_ROUTES === "1";
+}

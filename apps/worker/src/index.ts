@@ -1,10 +1,10 @@
+import { handleRequest } from "./app";
+import { createDeps } from "./deps";
 import type { Env } from "./env";
 
-const NOT_FOUND_STATUS = 404;
-
 export default {
-  async fetch() {
-    return Response.json({ error: "not_found" }, { status: NOT_FOUND_STATUS });
+  async fetch(request, env, ctx) {
+    return handleRequest({ deps: createDeps({ env, ctx }), request });
   },
   async scheduled() {},
 } satisfies ExportedHandler<Env>;
