@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+apps/web/pnpm-lock.yaml
+**/dist
+**/.wrangler
+apps/worker/fixtures
+apps/worker/test/__snapshots__
+**/dist-prerender
+apps/worker/src/shield/disposable-domains.ts

@@ -1,0 +1,66 @@
+export type Plan = "starter" | "pro";
+
+export type SubscriptionStatus = "no_subscription" | "trialing" | "active" | "past_due" | "paused" | "canceled";
+
+export type LinkStatus = "pending" | "ok" | "failed" | "paused";
+
+export type FailReason = "not_shopify" | "unavailable" | "blocked";
+
+export type SkipReason = "invalid_url" | "not_product_link" | "duplicate" | "over_limit";
+
+export type ApiError = {
+  error: string;
+  message: string;
+};
+
+export type MeDto = {
+  email: string;
+  plan: Plan | null;
+  subscription: SubscriptionStatus;
+  linkLimit: number;
+  linkCount: number;
+  timeZone: string | null;
+};
+
+export type LinkDto = {
+  id: string;
+  url: string;
+  storeHost: string;
+  title: string | null;
+  variantTitle: string | null;
+  priceCents: number | null;
+  previousPriceCents: number | null;
+  changedAt: string | null;
+  status: LinkStatus;
+  failReason: FailReason | null;
+  lastCheckedAt: string | null;
+  createdAt: string;
+};
+
+export type AddLinksResult = {
+  added: number;
+  skipped: Array<{ line: number; text: string; reason: SkipReason }>;
+};
+
+export type BillingDto = {
+  plan: Plan | null;
+  subscription: SubscriptionStatus;
+  nextBilledAt: string | null;
+  checkout: {
+    clientToken: string;
+    environment: "sandbox" | "production";
+    prices: Record<Plan, string>;
+  } | null;
+};
+
+export const EXPORT_CSV_COLUMNS = [
+  "store",
+  "product",
+  "variant",
+  "url",
+  "price",
+  "previous_price",
+  "change",
+  "change_percent",
+  "recorded_at",
+] as const;

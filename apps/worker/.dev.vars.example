@@ -1,0 +1,2 @@
+DEV_ROUTES=1
+BETTER_AUTH_SECRET=dev-only-secret-change-me-32-characters

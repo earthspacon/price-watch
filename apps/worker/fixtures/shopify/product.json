@@ -1,0 +1,11 @@
+{
+  "product": {
+    "id": 101,
+    "title": "Linen Shirt",
+    "handle": "linen-shirt",
+    "variants": [
+      { "id": 1001, "title": "Blue / M", "price": "24.99", "sku": "LS-BM" },
+      { "id": 1002, "title": "White / L", "price": "29.99", "sku": "LS-WL" }
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "event_id": "evt_01jexample0000000000000003",
+  "event_type": "subscription.activated",
+  "occurred_at": "2026-11-20T10:00:00.000000Z",
+  "notification_id": "ntf_01jexample0000000000000003",
+  "data": {
+    "id": "sub_01jexamplesub0000000000000",
+    "status": "active",
+    "customer_id": "ctm_01jexamplecustomer0000000",
+    "address_id": "add_01jexampleaddress000000000",
+    "business_id": null,
+    "currency_code": "USD",
+    "created_at": "2026-11-20T10:00:00.000Z",
+    "updated_at": "2026-11-20T10:00:00.000Z",
+    "started_at": "2026-11-20T10:00:00.000Z",
+    "first_billed_at": "2026-11-27T10:00:00.000Z",
+    "next_billed_at": "2026-12-27T10:00:00.000Z",
+    "paused_at": null,
+    "canceled_at": null,
+    "collection_mode": "automatic",
+    "billing_details": null,
+    "current_billing_period": {
+      "starts_at": "2026-11-27T10:00:00.000Z",
+      "ends_at": "2026-12-27T10:00:00.000Z"
+    },
+    "billing_cycle": {
+      "interval": "month",
+      "frequency": 1
+    },
+    "scheduled_change": null,
+    "items": [
+      {
+        "status": "active",
+        "quantity": 1,
+        "recurring": true,
+        "created_at": "2026-11-20T10:00:00.000Z",
+        "updated_at": "2026-11-20T10:00:00.000Z",
+        "previously_billed_at": null,
+        "next_billed_at": "2026-12-27T10:00:00.000Z",
+        "trial_dates": null,
+        "price": {
+          "id": "pri_starter_test",
+          "product_id": "pro_01jexampleproduct00000000",
+          "description": "Starter monthly",
+          "type": "standard",
+          "name": "Starter monthly",
+          "billing_cycle": {
+            "interval": "month",
+            "frequency": 1
+          },
+          "trial_period": null,
+          "tax_mode": "account_setting",
+          "unit_price": {
+            "amount": "1900",
+            "currency_code": "USD"
+          },
+          "quantity": {
+            "minimum": 1,
+            "maximum": 1
+          },
+          "status": "active",
+          "custom_data": null
+        }
+      }
+    ],
+    "custom_data": {
+      "account_id": "ACCOUNT_ID"
+    },
+    "management_urls": {
+      "update_payment_method": null,
+      "cancel": null
+    },
+    "discount": null,
+    "import_meta": null
+  }
+}

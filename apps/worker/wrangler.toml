@@ -1,0 +1,90 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "price-watch"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# The SPA (apps/web build) is served from the same origin; API, webhook and dev routes hit the Worker first.
+# Unknown paths fall through to the Worker, which answers with the prerendered 404 page and status 404.
+[assets]
+directory = "../web/dist"
+binding = "ASSETS"
+not_found_handling = "none"
+run_worker_first = ["/api/*", "/dev/*", "/paddle/*", "/app", "/app/*", "/sign-in"]
+
+# Per-minute limits (the binding only supports 10 s or 60 s windows). Longer windows live in D1 (rate_limit_hits).
+[[ratelimits]]
+name = "AUTH_LIMITER"
+namespace_id = "1003"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "LINKS_LIMITER"
+namespace_id = "1004"
+simple = { limit = 30, period = 60 }
+
+[[d1_databases]]
+binding = "DB"
+database_name = "price-watch"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# Every minute: due link checks. Hourly: morning digests and the rate-limit purge.
+[triggers]
+crons = ["* * * * *", "0 * * * *"]
+
+# Secrets, set with `wrangler secret put <NAME> --env production` (locally in .dev.vars):
+#   BETTER_AUTH_SECRET, RESEND_API_KEY, PADDLE_API_KEY, PADDLE_WEBHOOK_SECRET, TURNSTILE_SECRET_KEY
+#   Optional: GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET turn on "Continue with Google" (both, or it stays off)
+# Local defaults below; `--env production` uses the block at the end.
+[vars]
+APP_URL = "http://localhost:8787"
+MAIL_FROM = "PriceDawn <hello@pricedawn.example>"
+DEV_ROUTES = "0"
+PADDLE_ENV = "sandbox"
+PADDLE_CLIENT_TOKEN = ""
+PADDLE_PRICE_STARTER = "pri_starter_example"
+PADDLE_PRICE_PRO = "pri_pro_example"
+OWNER_ALERT_EMAIL = "owner@pricedawn.example"
+# Empty: checks fetch the real store. Local e2e runs point it at the fake store server.
+DEV_STORE_ORIGIN = ""
+
+# Production: `wrangler deploy --env production`. Bindings aren't inherited, so they are repeated here.
+[env.production]
+name = "price-watch"
+routes = [{ pattern = "pricedawn.com", custom_domain = true }]
+
+[env.production.assets]
+directory = "../web/dist"
+binding = "ASSETS"
+not_found_handling = "none"
+run_worker_first = ["/api/*", "/dev/*", "/paddle/*", "/app", "/app/*", "/sign-in"]
+
+[[env.production.ratelimits]]
+name = "AUTH_LIMITER"
+namespace_id = "1003"
+simple = { limit = 30, period = 60 }
+
+[[env.production.ratelimits]]
+name = "LINKS_LIMITER"
+namespace_id = "1004"
+simple = { limit = 30, period = 60 }
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "price-watch"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[env.production.triggers]
+crons = ["* * * * *", "0 * * * *"]
+
+[env.production.vars]
+APP_URL = "https://pricedawn.com"
+MAIL_FROM = "PriceDawn <hello@mail.pricedawn.com>"
+DEV_ROUTES = "0"
+PADDLE_ENV = "production"
+PADDLE_CLIENT_TOKEN = "REPLACE_WITH_PADDLE_CLIENT_TOKEN"
+PADDLE_PRICE_STARTER = "REPLACE_WITH_PRICE_ID"
+PADDLE_PRICE_PRO = "REPLACE_WITH_PRICE_ID"
+OWNER_ALERT_EMAIL = "REPLACE_WITH_OWNER_EMAIL"

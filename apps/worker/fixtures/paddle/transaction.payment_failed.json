@@ -1,0 +1,57 @@
+{
+  "event_id": "evt_01jexample0000000000000008",
+  "event_type": "transaction.payment_failed",
+  "occurred_at": "2026-11-20T10:00:00.000000Z",
+  "notification_id": "ntf_01jexample0000000000000008",
+  "data": {
+    "id": "txn_01jexampletransaction000000",
+    "status": "past_due",
+    "customer_id": "ctm_01jexamplecustomer0000000",
+    "subscription_id": "sub_01jexamplesub0000000000000",
+    "origin": "subscription_recurring",
+    "currency_code": "USD",
+    "collection_mode": "automatic",
+    "custom_data": {
+      "account_id": "ACCOUNT_ID"
+    },
+    "items": [
+      {
+        "price": {
+          "id": "pri_starter_test",
+          "product_id": "pro_01jexampleproduct00000000",
+          "description": "Starter monthly",
+          "type": "standard",
+          "name": "Starter monthly",
+          "billing_cycle": {
+            "interval": "month",
+            "frequency": 1
+          },
+          "trial_period": null,
+          "tax_mode": "account_setting",
+          "unit_price": {
+            "amount": "1900",
+            "currency_code": "USD"
+          },
+          "quantity": {
+            "minimum": 1,
+            "maximum": 1
+          },
+          "status": "active",
+          "custom_data": null
+        },
+        "quantity": 1
+      }
+    ],
+    "details": {
+      "totals": {
+        "subtotal": "900",
+        "tax": "0",
+        "total": "900",
+        "currency_code": "USD"
+      }
+    },
+    "billed_at": "2026-11-27T10:00:00.000Z",
+    "created_at": "2026-11-27T10:00:00.000Z",
+    "updated_at": "2026-11-27T10:00:00.000Z"
+  }
+}
