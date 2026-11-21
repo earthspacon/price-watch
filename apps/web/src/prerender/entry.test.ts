@@ -8,7 +8,7 @@ import TEMPLATE from "../../index.html?raw";
 import { CONTACT_EMAIL, SELLER_LEGAL_NAME } from "../site/config";
 import { buildPrerenderedFiles } from "./entry";
 
-const SITE_URL = "https://pricedawn.com";
+const SITE_URL = "https://pricedawn.spacesonlabs.com";
 const PUBLIC_PATHS = [
   "/",
   "/pricing",
@@ -149,6 +149,7 @@ describe("prerendered public site", () => {
       expect(legal).toContain("Spaceson Labs");
       expect(legal).toContain(SELLER_LEGAL_NAME);
       expect(legal).toContain(CONTACT_EMAIL);
+      expect(legal).toContain("pricedawn@spacesonlabs.com");
     }
     for (const pagePath of PUBLIC_PATHS) {
       const html = readPage(pagePath);

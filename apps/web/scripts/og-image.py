@@ -47,7 +47,7 @@ def main() -> None:
         fill=WHITE,
     )
 
-    draw.text((90, 585), "pricedawn.com", font=font("DejaVuSans-Bold.ttf", 30), fill=WHITE)
+    draw.text((90, 585), "pricedawn.spacesonlabs.com", font=font("DejaVuSans-Bold.ttf", 30), fill=WHITE)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     image.save(OUT, format="PNG", optimize=True)

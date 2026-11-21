@@ -52,7 +52,7 @@ DEV_STORE_ORIGIN = ""
 # Production: `wrangler deploy --env production`. Bindings aren't inherited, so they are repeated here.
 [env.production]
 name = "price-watch"
-routes = [{ pattern = "pricedawn.com", custom_domain = true }]
+routes = [{ pattern = "pricedawn.spacesonlabs.com", custom_domain = true }]
 
 [env.production.assets]
 directory = "../web/dist"
@@ -80,8 +80,8 @@ migrations_dir = "migrations"
 crons = ["* * * * *", "0 * * * *"]
 
 [env.production.vars]
-APP_URL = "https://pricedawn.com"
-MAIL_FROM = "PriceDawn <hello@mail.pricedawn.com>"
+APP_URL = "https://pricedawn.spacesonlabs.com"
+MAIL_FROM = "PriceDawn <pricedawn@mail.spacesonlabs.com>"
 DEV_ROUTES = "0"
 PADDLE_ENV = "production"
 PADDLE_CLIENT_TOKEN = "REPLACE_WITH_PADDLE_CLIENT_TOKEN"

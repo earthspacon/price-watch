@@ -7,13 +7,13 @@
 - Pro: $49/mo, 1,000 links
 
 ## Pages
-- Home: https://pricedawn.com
-- Pricing: https://pricedawn.com/pricing
-- PriceDawn compared with Prisync and PriceMole: https://pricedawn.com/prisync-alternative
-- How to track Shopify competitor prices: https://pricedawn.com/track-shopify-competitor-prices
-- Terms of service: https://pricedawn.com/terms
-- Privacy policy: https://pricedawn.com/privacy
-- Refund policy: https://pricedawn.com/refunds
+- Home: https://pricedawn.spacesonlabs.com
+- Pricing: https://pricedawn.spacesonlabs.com/pricing
+- PriceDawn compared with Prisync and PriceMole: https://pricedawn.spacesonlabs.com/prisync-alternative
+- How to track Shopify competitor prices: https://pricedawn.spacesonlabs.com/track-shopify-competitor-prices
+- Terms of service: https://pricedawn.spacesonlabs.com/terms
+- Privacy policy: https://pricedawn.spacesonlabs.com/privacy
+- Refund policy: https://pricedawn.spacesonlabs.com/refunds
 
 ## Notes
 - A link is one product variant.

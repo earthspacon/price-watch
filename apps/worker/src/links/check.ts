@@ -10,7 +10,7 @@ export type StoreFetcher = (product: { host: string; handle: string }) => Promis
 
 export type CheckedLink = { storeHost: string; handle: string; variantKey: string };
 
-export const STORE_USER_AGENT = "PriceDawn/1.0 (+https://pricedawn.com)";
+export const STORE_USER_AGENT = "PriceDawn/1.0 (+https://pricedawn.spacesonlabs.com)";
 
 const CHECK_TIMEOUT_MS = 10_000;
 const HTTP_FORBIDDEN = 403;

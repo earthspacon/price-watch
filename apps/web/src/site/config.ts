@@ -1,8 +1,8 @@
 export const SITE_NAME = "PriceDawn";
-export const SITE_URL = "https://pricedawn.com";
+export const SITE_URL = "https://pricedawn.spacesonlabs.com";
 export const SITE_BRAND = "Spaceson Labs";
 export const SELLER_LEGAL_NAME = "REPLACE_WITH legal name";
-export const CONTACT_EMAIL = "REPLACE_WITH contact email";
+export const CONTACT_EMAIL = "pricedawn@spacesonlabs.com";
 export const OG_IMAGE = {
   path: "/og.png",
   width: 1200,

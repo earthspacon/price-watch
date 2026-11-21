@@ -28,7 +28,7 @@ import {
 const RIVAL = "rival.example";
 const SHIRT = "linen-shirt";
 const SHIRT_JSON_URL = productJsonUrl({ host: RIVAL, handle: SHIRT });
-const USER_AGENT = "PriceDawn/1.0 (+https://pricedawn.com)";
+const USER_AGENT = "PriceDawn/1.0 (+https://pricedawn.spacesonlabs.com)";
 const FIRST_RUN = "2030-01-14T15:00:00.000Z";
 // The day after FIRST_RUN, past 01:00 UTC, so a link checked on the first run is due again.
 const NEXT_DAY_RUN = "2030-01-15T09:00:00.000Z";
