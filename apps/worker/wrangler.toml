@@ -54,6 +54,9 @@ DEV_STORE_ORIGIN = ""
 [env.production]
 name = "price-watch"
 routes = [{ pattern = "pricedawn.spacesonlabs.com", custom_domain = true }]
+# The product domain is the only public origin: no workers.dev or preview URLs.
+workers_dev = false
+preview_urls = false
 
 [env.production.assets]
 directory = "../web/dist"
