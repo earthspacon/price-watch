@@ -77,7 +77,14 @@ export async function handlePaddleWebhook({ deps, request }: { deps: Deps; reque
     return json({ received: true, outcome: "duplicate" });
   }
 
-  const outcome = await applyPaddleEvent({ deps, event });
+  // A failed apply must not leave the event id behind, or Paddle's retry would be answered as a duplicate.
+  let outcome: string;
+  try {
+    outcome = await applyPaddleEvent({ deps, event });
+  } catch (error) {
+    await deps.db.prepare("DELETE FROM paddle_events WHERE event_id = ?").bind(event.eventId).run();
+    throw error;
+  }
   console.log("paddle webhook", event.eventType, outcome);
   return json({ received: true, outcome });
 }

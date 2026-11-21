@@ -102,6 +102,23 @@ describe("billing", () => {
     ).toBe(1);
   });
 
+  it("R6: an event whose apply fails is applied when Paddle redelivers it", async () => {
+    const { accountId, cookie } = await signInAccount({ email: uniqueEmail({ prefix: "redeliver" }) });
+    const activation = buildPaddleEvent({ fixture: "activated", accountId });
+    await db.exec(
+      "CREATE TRIGGER fail_subscription_write BEFORE UPDATE ON subscriptions BEGIN SELECT RAISE(ABORT, 'disk error'); END",
+    );
+
+    const failed = await postPaddleEvent({ body: activation });
+    await db.exec("DROP TRIGGER fail_subscription_write");
+    const redelivered = await postPaddleEvent({ body: activation });
+
+    expect(failed.status).toBe(500);
+    expect(redelivered.status).toBe(200);
+    expect(await redelivered.json()).toMatchObject({ outcome: expect.not.stringMatching(/duplicate/) });
+    expect(await readMe({ cookie })).toMatchObject({ subscription: "active" });
+  });
+
   it("R6: a failed payment alerts the owner", async () => {
     const { accountId } = await signInActiveStarter({ prefix: "card-declined" });
     const ownerMailsBefore = await countOwnerMails();
