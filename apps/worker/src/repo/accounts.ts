@@ -1,5 +1,6 @@
 import { isLive, PLANS, type Plan, type SubscriptionStatus } from "@price-watch/contract";
 
+import type { DigestChange, DigestFailure } from "../digest/build";
 import { newId } from "../ids";
 
 export async function createAccount({
@@ -207,4 +208,134 @@ export type AccountContext = {
 // Zero without a live plan: nothing is tracked then, and every stored link reads as paused.
 export function getLinkLimit({ account }: { account: AccountContext }) {
   return account.plan && isLive(account.subscription) ? PLANS[account.plan].linkLimit : 0;
+}
+
+export async function setAccountTimeZone({
+  db,
+  accountId,
+  timeZone,
+}: {
+  db: D1Database;
+  accountId: string;
+  timeZone: string;
+}) {
+  await db.prepare("UPDATE accounts SET time_zone = ? WHERE id = ?").bind(timeZone, accountId).run();
+}
+
+export type DigestAccount = {
+  accountId: string;
+  email: string;
+  timeZone: string | null;
+  digestCursor: string;
+  lastDigestOn: string | null;
+};
+
+// Every account is a candidate; the caller decides which ones are due from their local clock.
+export async function listDigestAccounts({ db }: { db: D1Database }) {
+  const { results } = await db
+    .prepare(
+      `SELECT id AS accountId, email, time_zone AS timeZone, digest_cursor AS digestCursor, last_digest_on AS lastDigestOn
+       FROM accounts`,
+    )
+    .all<DigestAccount>();
+
+  return results;
+}
+
+// On send (or a quiet day) the account moves to its local date and the cursor to the run time.
+export async function markDigestSent({
+  db,
+  accountId,
+  localDate,
+  now,
+}: {
+  db: D1Database;
+  accountId: string;
+  localDate: string;
+  now: Date;
+}) {
+  await db
+    .prepare("UPDATE accounts SET last_digest_on = ?, digest_cursor = ? WHERE id = ?")
+    .bind(localDate, now.toISOString(), accountId)
+    .run();
+}
+
+type DigestPointRow = {
+  linkId: string;
+  storeHost: string;
+  title: string | null;
+  variantTitle: string | null;
+  url: string;
+  priceCents: number;
+  previousCents: number | null;
+  recordedAt: string;
+};
+
+// Every price point since the last digest, folded into one net change per link; a net zero is dropped.
+export async function loadDigestChanges({
+  db,
+  accountId,
+  since,
+}: {
+  db: D1Database;
+  accountId: string;
+  since: string;
+}) {
+  const { results } = await db
+    .prepare(
+      `SELECT p.link_id AS linkId, l.store_host AS storeHost, l.title AS title, l.variant_title AS variantTitle,
+              l.url AS url, p.price_cents AS priceCents, p.previous_cents AS previousCents, p.recorded_at AS recordedAt
+       FROM price_points p
+       JOIN links l ON l.id = p.link_id
+       WHERE p.account_id = ? AND p.recorded_at > ?
+       ORDER BY p.link_id, p.recorded_at`,
+    )
+    .bind(accountId, since)
+    .all<DigestPointRow>();
+
+  return netChanges({ rows: results });
+}
+
+export async function loadDigestFailures({
+  db,
+  accountId,
+  since,
+}: {
+  db: D1Database;
+  accountId: string;
+  since: string;
+}) {
+  const { results } = await db
+    .prepare(
+      `SELECT store_host AS storeHost, title, variant_title AS variantTitle, url, fail_reason AS reason
+       FROM links
+       WHERE account_id = ? AND failed_at IS NOT NULL AND failed_at > ?
+       ORDER BY store_host, title`,
+    )
+    .bind(accountId, since)
+    .all<DigestFailure>();
+
+  return results;
+}
+
+function netChanges({ rows }: { rows: DigestPointRow[] }) {
+  const byLink = new Map<string, DigestChange>();
+
+  for (const row of rows) {
+    const change = byLink.get(row.linkId);
+    if (change) {
+      change.toCents = row.priceCents;
+      continue;
+    }
+    byLink.set(row.linkId, {
+      storeHost: row.storeHost,
+      title: row.title,
+      variantTitle: row.variantTitle,
+      url: row.url,
+      fromCents: row.previousCents ?? row.priceCents,
+      toCents: row.priceCents,
+    });
+  }
+
+  return [...byLink.values()].filter((change) => change.fromCents !== change.toCents);
 }

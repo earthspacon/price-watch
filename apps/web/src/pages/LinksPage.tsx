@@ -35,6 +35,8 @@ import {
 const EMPTY_STATE = "No links yet. Paste product links from competitor Shopify stores.";
 const NO_VALUE = "—";
 const URL_SCHEME = /^https:\/\//;
+const DIGEST_HOUR_LABEL = "7:00";
+const FALLBACK_TIME_ZONE = "UTC";
 const TABLE_COLUMNS = ["Product", "Price", "Last change", "Status", "Last checked", ""];
 
 export const LinksPage = () => {
@@ -45,7 +47,15 @@ export const LinksPage = () => {
 
   return (
     <>
-      <PageHeader title="Your links" subtitle={hasPlan ? describeUsage({ me }) : "Pick a plan to start tracking."} />
+      <PageHeader
+        title="Your links"
+        subtitle={
+          <>
+            <span className="block">{hasPlan ? describeUsage({ me }) : "Pick a plan to start tracking."}</span>
+            <span className="block">{describeDigest({ timeZone: me?.timeZone ?? null })}</span>
+          </>
+        }
+      />
       {!hasPlan && <PlanSection />}
       <PasteCard isDisabled={!hasPlan || isFull} />
       <LinksList />
@@ -280,6 +290,10 @@ function describeUsage({ me }: { me: { linkCount: number; linkLimit: number } })
   const isStarterFull = me.linkLimit === PLANS.starter.linkLimit && me.linkCount >= me.linkLimit;
 
   return isStarterFull ? `${usage} Switch to Pro for ${PLANS.pro.linkLimit.toLocaleString("en-US")}.` : usage;
+}
+
+function describeDigest({ timeZone }: { timeZone: string | null }) {
+  return `Daily email at ${DIGEST_HOUR_LABEL} (${timeZone ?? FALLBACK_TIME_ZONE})`;
 }
 
 function formatPrice(link: LinkDto) {

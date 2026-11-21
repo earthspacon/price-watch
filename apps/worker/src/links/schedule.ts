@@ -35,6 +35,21 @@ export function minutesLater({ time, minutes }: { time: Date; minutes: number })
   return new Date(time.getTime() + minutes * MS_PER_MINUTE);
 }
 
+export type LocalDateTime = { date: string; hour: number };
+
+// The wall-clock date and hour in `timeZone`; the digest is keyed to the account's local day.
+export function localDateTime({ now, timeZone }: { now: Date; timeZone: string }): LocalDateTime {
+  const wall = readWallTime({ date: now, timeZone });
+  return {
+    date: `${wall.year}-${pad({ value: wall.month })}-${pad({ value: wall.day })}`,
+    hour: wall.hour,
+  };
+}
+
+function pad({ value }: { value: number }) {
+  return String(value).padStart(2, "0");
+}
+
 function readWallTime({ date, timeZone }: { date: Date; timeZone: string }) {
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone,

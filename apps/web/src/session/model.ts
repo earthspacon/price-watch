@@ -27,6 +27,15 @@ export const signOutFx = createEffect(() => {
   });
 });
 
+// The browser knows the zone; the server stores it once, on the first load that sees none (D9).
+export const saveTimeZoneFx = createEffect((timeZone: string) => {
+  return apiCommand({
+    path: "/api/account/time-zone",
+    method: "PUT",
+    body: { timeZone },
+  });
+});
+
 export const $me = createStore<MeDto | null>(null);
 export const $sessionStatus = createStore<SessionStatus>("loading");
 export const $sessionError = createStore("");
@@ -63,6 +72,23 @@ sample({
 sample({
   clock: meFx.failData,
   target: $me.reinit,
+});
+// #endregion
+
+// #region time zone
+sample({
+  clock: meFx.doneData,
+  filter: (me) => me.timeZone === null,
+  fn: () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+  target: saveTimeZoneFx,
+});
+
+sample({
+  clock: saveTimeZoneFx.done,
+  source: $me,
+  filter: (me): me is MeDto => me !== null,
+  fn: (me, { params }) => ({ ...me, timeZone: params }),
+  target: $me,
 });
 // #endregion
 

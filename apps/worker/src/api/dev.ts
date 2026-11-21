@@ -1,5 +1,6 @@
 import type { Plan, SubscriptionStatus } from "@price-watch/contract";
 
+import { runDigests } from "../digest/run-digests";
 import { HttpError, json, readJson, readString, route, type Route } from "../http";
 import { newId } from "../ids";
 import { runChecks } from "../links/run-checks";
@@ -37,6 +38,12 @@ export const devRoutes: Route<PublicContext>[] = [
   route("POST", "/dev/run-checks", async ({ deps, request }) => {
     const now = readTime({ data: await readJson(request), key: "now" });
     return json({ checked: await runChecks({ deps, now }) });
+  }),
+
+  // The digest cron's run at an explicit clock.
+  route("POST", "/dev/run-digests", async ({ deps, request }) => {
+    const now = readTime({ data: await readJson(request), key: "now" });
+    return json({ sent: await runDigests({ deps, now }) });
   }),
 
   route("GET", "/dev/outbox", async ({ deps, request }) => {
