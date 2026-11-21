@@ -104,7 +104,10 @@ describe("plan picker", () => {
       });
     });
 
-    await page.getByRole("button", { name: /Starter/ }).and(page.locator(":enabled")).waitFor();
+    await page
+      .getByRole("button", { name: /Starter/ })
+      .and(page.locator(":enabled"))
+      .waitFor();
     isCheckoutClicked = true;
     await page.getByRole("button", { name: /Starter/ }).click();
 

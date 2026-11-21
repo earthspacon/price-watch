@@ -199,7 +199,9 @@ describe("sign-in", () => {
     const now = new Date();
 
     const results = await Promise.all(
-      Array.from({ length: 5 }, () => consumeRateLimit({ db, key, limit: EMAIL_LINKS_PER_WINDOW, windowMs: 60_000, now })),
+      Array.from({ length: 5 }, () =>
+        consumeRateLimit({ db, key, limit: EMAIL_LINKS_PER_WINDOW, windowMs: 60_000, now }),
+      ),
     );
 
     expect(results.filter(Boolean)).toHaveLength(EMAIL_LINKS_PER_WINDOW);
