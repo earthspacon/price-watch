@@ -10,9 +10,6 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
-  "dependencies": {
-    "@withease/contracts": "^1.1.0"
-  },
   "devDependencies": {
     "typescript": "^5.9.3",
     "vitest": "~4.1.0"
