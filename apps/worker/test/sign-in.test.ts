@@ -2,6 +2,7 @@ import type { MeDto } from "@price-watch/contract";
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 
+import { consumeRateLimit } from "../src/repo/shield";
 import { apiFetch, countOutbox, countRows, db, uniqueEmail } from "./helpers";
 import {
   BASE,
@@ -191,5 +192,16 @@ describe("sign-in", () => {
 
     expect(statuses).toEqual([200, 200, 200, 429]);
     expect(await countOutbox({ to: email })).toBe(EMAIL_LINKS_PER_WINDOW);
+  });
+
+  it("R3: parallel requests for one key never pass more than the limit", async () => {
+    const key = `parallel:${uniqueEmail({ prefix: "race" })}`;
+    const now = new Date();
+
+    const results = await Promise.all(
+      Array.from({ length: 5 }, () => consumeRateLimit({ db, key, limit: EMAIL_LINKS_PER_WINDOW, windowMs: 60_000, now })),
+    );
+
+    expect(results.filter(Boolean)).toHaveLength(EMAIL_LINKS_PER_WINDOW);
   });
 });
