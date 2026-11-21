@@ -37,6 +37,7 @@ const NO_VALUE = "—";
 const URL_SCHEME = /^https:\/\//;
 const DIGEST_HOUR_LABEL = "7:00";
 const FALLBACK_TIME_ZONE = "UTC";
+const EXPORT_PATH = "/api/export.csv";
 const TABLE_COLUMNS = ["Product", "Price", "Last change", "Status", "Last checked", ""];
 
 export const LinksPage = () => {
@@ -47,15 +48,20 @@ export const LinksPage = () => {
 
   return (
     <>
-      <PageHeader
-        title="Your links"
-        subtitle={
-          <>
-            <span className="block">{hasPlan ? describeUsage({ me }) : "Pick a plan to start tracking."}</span>
-            <span className="block">{describeDigest({ timeZone: me?.timeZone ?? null })}</span>
-          </>
-        }
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader
+          title="Your links"
+          subtitle={
+            <>
+              <span className="block">{hasPlan ? describeUsage({ me }) : "Pick a plan to start tracking."}</span>
+              <span className="block">{describeDigest({ timeZone: me?.timeZone ?? null })}</span>
+            </>
+          }
+        />
+        <a href={EXPORT_PATH} download className={BUTTON_SECONDARY}>
+          Export CSV
+        </a>
+      </div>
       {!hasPlan && <PlanSection />}
       <PasteCard isDisabled={!hasPlan || isFull} />
       <LinksList />

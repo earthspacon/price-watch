@@ -4,6 +4,7 @@ import { accountRoutes } from "./api/account";
 import { billingRoutes } from "./api/billing";
 import type { ApiContext, PublicContext } from "./api/context";
 import { devRoutes } from "./api/dev";
+import { exportRoutes } from "./api/export";
 import { linkRoutes } from "./api/links";
 import { createAuth, isGoogleSignInEnabled } from "./auth";
 import { handlePaddleWebhook } from "./billing/webhook";
@@ -13,7 +14,7 @@ import { HttpError, errorResponse, matchRoute, type Route } from "./http";
 import { getAccountByUserId } from "./repo/accounts";
 import { guardAuthRequest } from "./shield/auth-guard";
 
-export const API_ROUTES: Route<ApiContext>[] = [...accountRoutes, ...billingRoutes, ...linkRoutes];
+export const API_ROUTES: Route<ApiContext>[] = [...accountRoutes, ...billingRoutes, ...exportRoutes, ...linkRoutes];
 const READ_METHODS = new Set(["GET", "HEAD"]);
 const AUTH_PREFIX = "/api/auth/";
 const PADDLE_WEBHOOK_PATH = "/paddle/webhook";
