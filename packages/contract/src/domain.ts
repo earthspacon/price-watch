@@ -47,6 +47,7 @@ export type BillingDto = {
   subscription: SubscriptionStatus;
   nextBilledAt: string | null;
   checkout: {
+    accountId: string;
     clientToken: string;
     environment: "sandbox" | "production";
     prices: Record<Plan, string>;

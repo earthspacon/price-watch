@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
+import { BillingPage } from "../pages/BillingPage";
 import { LinksPage } from "../pages/LinksPage";
 import { SignInPage } from "../pages/SignInPage";
 import { AppShell, RequireSession } from "./AppShell";
@@ -21,6 +22,7 @@ export const AppRoutes = () => {
         <Route path="/app" element={<RequireSession />}>
           <Route element={<AppShell />}>
             <Route index element={<LinksPage />} />
+            <Route path="billing" element={<BillingPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/app" replace />} />

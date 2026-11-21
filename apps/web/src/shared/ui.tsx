@@ -17,6 +17,12 @@ const DATE_FORMAT = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
 });
 
+const DAY_FORMAT = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
 export const Card = ({ children, className = "" }: { children: ReactNode; className?: string }) => {
   return (
     <section className={`min-w-0 rounded-xl border border-slate-200 bg-white shadow-sm ${className}`}>
@@ -63,6 +69,10 @@ export const Banner = ({ tone, children }: { tone: "warning" | "danger" | "info"
 
 export function formatDate(iso: string) {
   return DATE_FORMAT.format(new Date(iso));
+}
+
+export function formatDay(iso: string) {
+  return DAY_FORMAT.format(new Date(iso));
 }
 
 const BANNER_TONES = {

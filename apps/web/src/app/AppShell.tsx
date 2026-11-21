@@ -1,5 +1,5 @@
 import { useUnit } from "effector-react";
-import { Link as LinkIcon, LogOut, TrendingDown, type LucideIcon } from "lucide-react";
+import { CreditCard, Link as LinkIcon, LogOut, TrendingDown, type LucideIcon } from "lucide-react";
 import { Link, Navigate, NavLink, Outlet } from "react-router-dom";
 
 import { $me, $sessionError, $sessionStatus, meRefreshRequested, signOutClicked } from "../session/model";
@@ -12,6 +12,11 @@ const NAV_ITEMS: NavItem[] = [
     to: "/app",
     label: "Links",
     icon: LinkIcon,
+  },
+  {
+    to: "/app/billing",
+    label: "Billing",
+    icon: CreditCard,
   },
 ];
 

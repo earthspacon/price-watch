@@ -1,4 +1,4 @@
-import type { Plan } from "./domain";
+import type { Plan, SubscriptionStatus } from "./domain";
 
 export const PLANS: Record<Plan, { name: string; monthlyCents: number; linkLimit: number }> = {
   starter: {
@@ -12,3 +12,18 @@ export const PLANS: Record<Plan, { name: string; monthlyCents: number; linkLimit
     linkLimit: 1000,
   },
 };
+
+export const LIVE_STATUSES: readonly SubscriptionStatus[] = ["trialing", "active", "past_due"];
+
+export function isLive(status: SubscriptionStatus) {
+  return LIVE_STATUSES.includes(status);
+}
+
+function formatUsd(cents: number) {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+// "$19" for whole dollars, "$19.50" otherwise.
+export function formatPrice(cents: number) {
+  return cents % 100 === 0 ? `$${cents / 100}` : formatUsd(cents);
+}

@@ -1,18 +1,21 @@
 import { SECURITY_HEADERS, SIGN_IN_OPTIONS_PATH, type SignInOptionsDto } from "@price-watch/contract";
 
 import { accountRoutes } from "./api/account";
+import { billingRoutes } from "./api/billing";
 import type { ApiContext, PublicContext } from "./api/context";
 import { devRoutes } from "./api/dev";
 import { createAuth, isGoogleSignInEnabled } from "./auth";
+import { handlePaddleWebhook } from "./billing/webhook";
 import type { Deps } from "./deps";
 import { isDev } from "./env";
 import { HttpError, errorResponse, matchRoute, type Route } from "./http";
 import { getAccountByUserId } from "./repo/accounts";
 import { guardAuthRequest } from "./shield/auth-guard";
 
-export const API_ROUTES: Route<ApiContext>[] = [...accountRoutes];
+export const API_ROUTES: Route<ApiContext>[] = [...accountRoutes, ...billingRoutes];
 const READ_METHODS = new Set(["GET", "HEAD"]);
 const AUTH_PREFIX = "/api/auth/";
+const PADDLE_WEBHOOK_PATH = "/paddle/webhook";
 // SPA routes that must get the empty app shell, not the prerendered landing page in index.html.
 const APP_SHELL_PATH = /^\/(app|app\/.*|sign-in)$/;
 const APP_SHELL_ASSET = "/app-shell";
@@ -45,6 +48,9 @@ async function routeRequest({ deps, request }: { deps: Deps; request: Request })
   if (pathname === SIGN_IN_OPTIONS_PATH && READ_METHODS.has(request.method)) {
     const options: SignInOptionsDto = { google: isGoogleSignInEnabled(deps.env) };
     return Response.json(options);
+  }
+  if (pathname === PADDLE_WEBHOOK_PATH && request.method === "POST") {
+    return handlePaddleWebhook({ deps, request });
   }
   if (pathname.startsWith("/dev/")) {
     return routeDevRequest({ deps, request });
