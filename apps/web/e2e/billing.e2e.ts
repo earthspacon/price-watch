@@ -2,7 +2,7 @@ import type { Browser, Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { PADDLE_TEST_PRICES } from "./config";
-import { launchBrowser, openAccount } from "./helpers";
+import { createAccount, launchBrowser, openAccount } from "./helpers";
 
 type CheckoutOptions = {
   items: Array<{ priceId: string; quantity: number }>;
@@ -12,15 +12,21 @@ type CheckoutOptions = {
 
 const PADDLE_CDN = "https://cdn.paddle.com/**";
 const CHECKOUT_TIMEOUT_MS = 10_000;
+const POLL_TIMEOUT_MS = 20_000;
 
 // Paddle.js stand-in: the real overlay needs a live Paddle account, so the test only records what the app asks it to open.
 const FAKE_PADDLE_JS = `
 window.Paddle = {
   Environment: { set: function () {} },
-  Initialize: function () {},
+  Initialize: function (options) {
+    window.paddleEventCallback = options.eventCallback;
+  },
   Checkout: {
     open: function (options) {
       window.recordPaddleCheckout(JSON.stringify(options));
+      if (window.completeCheckoutOnOpen) {
+        window.paddleEventCallback({ name: "checkout.completed" });
+      }
     },
   },
 };
@@ -74,5 +80,36 @@ describe("plan picker", () => {
       customer: { email },
       customData: { account_id: accountId },
     });
+  });
+
+  it("R5: a failed billing poll after checkout is retried until the plan appears", async () => {
+    const { page, email } = await openAccount({ browser });
+    await stubPaddle({ page });
+    await page.evaluate(() => {
+      (window as unknown as { completeCheckoutOnOpen: boolean }).completeCheckoutOnOpen = true;
+    });
+    let failedPolls = 0;
+    let isCheckoutClicked = false;
+    // The webhook lands while the first poll fails: the account turns active, then the poll fails.
+    await page.route("**/api/billing", async (route) => {
+      if (route.request().method() !== "GET" || !isCheckoutClicked || failedPolls > 0) {
+        return route.fallback();
+      }
+      failedPolls += 1;
+      await createAccount({ email, plan: "starter", status: "active" });
+      return route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "internal", message: "Something went wrong" }),
+      });
+    });
+
+    await page.getByRole("button", { name: /Starter/ }).and(page.locator(":enabled")).waitFor();
+    isCheckoutClicked = true;
+    await page.getByRole("button", { name: /Starter/ }).click();
+
+    await page.getByText("Payment received. Turning your plan on…").waitFor();
+    await page.getByText("Pick a plan to start tracking").waitFor({ state: "hidden", timeout: POLL_TIMEOUT_MS });
+    expect(failedPolls).toBe(1);
   });
 });
