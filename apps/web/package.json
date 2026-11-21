@@ -1,0 +1,37 @@
+{
+  "name": "@price-watch/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "pnpm run build && vitest run --config vitest.e2e.config.ts",
+    "shots": "pnpm run build && SHOTS=1 vitest run --config vitest.e2e.config.ts"
+  },
+  "dependencies": {
+    "@price-watch/contract": "workspace:*",
+    "@withease/contracts": "^1.1.0",
+    "effector": "^23.4.4",
+    "effector-react": "^23.3.0",
+    "effector-storage": "^8.0.1",
+    "lucide-react": "^1.77.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "playwright": "^1.65.1",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}
