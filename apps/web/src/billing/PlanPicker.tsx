@@ -27,7 +27,7 @@ export const PlanPicker = () => {
   return (
     <section className="space-y-4">
       <p className="text-sm text-slate-600">
-        Pick a plan to start tracking. Paddle is the merchant of record and adds sales tax or VAT where due.
+        Choose a plan below. Paddle is the merchant of record and adds sales tax or VAT where due.
       </p>
       {checkoutError && <Banner tone="danger">{checkoutError}</Banner>}
       {billing && !billing.checkout && <Banner tone="warning">Checkout isn't available on this server yet.</Banner>}

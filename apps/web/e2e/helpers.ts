@@ -12,6 +12,15 @@ export const LINKS_PATH = "/app";
 const LINK_PATTERN = /https?:\/\/\S+\/api\/auth\/magic-link\/verify\S+/;
 const UI_TIMEOUT_MS = 10_000;
 const DEFAULT_TIME_ZONE = "UTC";
+// Each test stands in for a different visitor. Cloudflare overwrites this header at the edge in
+// production, so only the signed-in-user rate limits apply here, not one shared localhost address.
+const FIRST_CLIENT_IP = 10;
+let nextClientIp = FIRST_CLIENT_IP;
+
+function clientIp() {
+  const octet = nextClientIp++;
+  return `198.51.100.${octet}`;
+}
 
 export type Session = {
   context: BrowserContext;
@@ -107,6 +116,20 @@ export async function readMagicLink({ email }: { email: string }) {
 }
 
 export async function signInWithUi({ page, email }: { page: Page; email: string }) {
+  // Each test stands in for a different visitor. Cloudflare overwrites this header at the edge in
+  // production, so locally it keeps the per-IP sign-in limit from counting the whole suite as one caller.
+  const ip = clientIp();
+  await page.route("**/api/auth/sign-in/magic-link", (route) => {
+    if (route.request().method() !== "POST") {
+      return route.fallback();
+    }
+    return route.continue({
+      headers: {
+        ...route.request().headers(),
+        "cf-connecting-ip": ip,
+      },
+    });
+  });
   await page.goto("/sign-in");
   await page.getByRole("textbox", { name: /email/i }).fill(email);
   await page.getByRole("button", { name: /sign-in link/i }).click();

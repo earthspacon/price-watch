@@ -6,7 +6,6 @@ import { apiRequest } from "../shared/api";
 
 const AFTER_SIGN_IN = {
   callbackURL: "/app",
-  newUserCallbackURL: "/app/onboarding",
   errorCallbackURL: "/sign-in",
 };
 

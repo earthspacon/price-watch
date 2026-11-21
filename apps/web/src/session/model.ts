@@ -8,6 +8,7 @@ export type SessionStatus = "loading" | "signed_out" | "no_account" | "error" | 
 export const appStarted = createEvent();
 export const meRefreshRequested = createEvent();
 export const signOutClicked = createEvent();
+export const timeZoneSaved = createEvent<string>();
 
 export const meFx = createEffect(async () => {
   // get-session answers 200 null when signed out, so a visitor causes no 401 in the console.
@@ -85,10 +86,12 @@ sample({
 
 sample({
   clock: saveTimeZoneFx.done,
-  source: $me,
-  filter: (me): me is MeDto => me !== null,
-  fn: (me, { params }) => ({ ...me, timeZone: params }),
-  target: $me,
+  fn: ({ params }) => params,
+  target: timeZoneSaved,
+});
+
+$me.on(timeZoneSaved, (me, timeZone) => {
+  return me === null ? null : { ...me, timeZone };
 });
 // #endregion
 
