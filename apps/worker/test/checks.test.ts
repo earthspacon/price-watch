@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { deleteLink, leaseDueLinks, saveCheckOutcomes } from "../src/repo/links";
+
 import notShopifyHtml from "../fixtures/shopify/not-shopify.html?raw";
 import {
   addLinks,
@@ -133,6 +135,39 @@ describe("first check", () => {
     expect(await readPricePoints({ accountId })).toEqual([
       { priceCents: 2499, previousCents: null, recordedAt: FIRST_RUN },
     ]);
+  });
+
+  it("R13: a link removed while its check is running does not lose the other results", async () => {
+    const handles = ["removed-while-checking", "kept-while-checking"];
+    const host = "mid-run.example";
+    for (const handle of handles) {
+      setStoreProduct({ host, handle, product: LINEN_SHIRT });
+    }
+    const { accountId } = await startTracking({
+      prefix: "mid-run",
+      urls: handles.map((handle) => productUrl({ host, handle })),
+    });
+    const now = new Date(FIRST_RUN);
+    const leased = (
+      await leaseDueLinks({ db, now, leasedUntil: new Date(now.getTime() + 600_000), perRun: 100, perHost: 100 })
+    ).filter((link) => link.accountId === accountId);
+    expect(leased).toHaveLength(2);
+
+    await deleteLink({ db, accountId, linkId: leased[0].id });
+    await saveCheckOutcomes({
+      db,
+      now,
+      outcomes: leased.map((link) => ({
+        link,
+        status: "ok" as const,
+        failReason: null,
+        attempts: 0,
+        nextCheckAt: new Date(now.getTime() + 86_400_000),
+        product: { title: "Linen Shirt", variantTitle: null, priceCents: 2499 },
+      })),
+    });
+
+    expect(await readPricePoints({ accountId })).toHaveLength(1);
   });
 
   it("R13: a variant link tracks that variant", async () => {

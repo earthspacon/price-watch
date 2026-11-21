@@ -258,7 +258,8 @@ export async function saveCheckOutcomes({
     }
     const pricePoint = db
       .prepare(
-        "INSERT INTO price_points (id, link_id, account_id, price_cents, previous_cents, recorded_at) VALUES (?, ?, ?, ?, ?, ?)",
+        `INSERT INTO price_points (id, link_id, account_id, price_cents, previous_cents, recorded_at)
+         SELECT ?1, ?2, ?3, ?4, ?5, ?6 WHERE EXISTS (SELECT 1 FROM links WHERE id = ?2)`,
       )
       .bind(newId(), link.id, link.accountId, product.priceCents, link.priceCents, at);
     return [pricePoint, update];
