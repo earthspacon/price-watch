@@ -19,8 +19,8 @@ Names used below:
 
 1. Add the custom domain `pricedawn.spacesonlabs.com` on the existing `spacesonlabs.com` zone (the zone is already Active in Cloudflare; the `routes` entry in `wrangler.toml` creates it on deploy).
 2. Log in the CLI: `pnpm exec wrangler login`.
-3. The Worker fits the Free plan at launch. Free allows 100,000 requests a day and 5 cron triggers per account. The every-minute check cron is the limit that matters: with up to 20 checks a minute it can do about 28,800 checks a day. Buy **Workers Paid** ($5/mo) before that becomes tight — a few hundred active Starter accounts, or one Pro account tracking a thousand links — and whenever the Workers dashboard shows `Exceeded CPU` for the check cron. Paid also removes the 10 ms CPU ceiling per request.
-4. Crons are account-wide. PriceDawn uses two triggers (checks every minute, digests and the rate-limit purge hourly). If this Cloudflare account runs another product too, count both: two products with two triggers each use 4 of the 5 Free triggers. A third product would need Workers Paid or a shared trigger.
+3. The Worker fits the Free plan at launch. Free allows 100,000 requests a day and 5 cron triggers per account. The every-minute check cron is the limit that matters: with up to 20 checks a minute (the :00 tick runs the hourly jobs instead) it can do about 28,300 checks a day. Buy **Workers Paid** ($5/mo) before that becomes tight — a few hundred active Starter accounts, or one Pro account tracking a thousand links — and whenever the Workers dashboard shows `Exceeded CPU` for the check cron. Paid also removes the 10 ms CPU ceiling per request.
+4. Cron triggers are account-wide, 5 on Free. PriceDawn uses one every-minute trigger: the checks run on every tick except :00, the digests and the rate-limit purge on the :00 tick. InboxSieve and MonthMemo use one each, so the studio uses 3 of 5.
 
 ## 2. D1
 
@@ -118,7 +118,7 @@ A rate-limit namespace id is shared by every Worker on the same Cloudflare accou
 
 ### Crons
 
-`[env.production.triggers].crons` has two entries: `* * * * *` runs the due link checks, `0 * * * *` runs the morning digests and purges old rate-limit rows.
+`[env.production.triggers].crons` has one entry, `* * * * *`. Every tick except :00 runs the due link checks; the :00 tick runs the morning digests and purges old rate-limit rows.
 
 ## 8. Build and deploy
 
@@ -131,7 +131,7 @@ pnpm exec wrangler deploy --dry-run --env production   # check the bindings list
 pnpm exec wrangler deploy --env production
 ```
 
-The custom-domain route in `wrangler.toml` attaches `pricedawn.spacesonlabs.com` to the Worker and creates its DNS record. The two crons come from `[env.production.triggers]`.
+The custom-domain route in `wrangler.toml` attaches `pricedawn.spacesonlabs.com` to the Worker and creates its DNS record. The cron trigger comes from `[env.production.triggers]`.
 
 ## 9. Smoke test (about 10 minutes)
 

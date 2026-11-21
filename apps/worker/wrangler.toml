@@ -29,9 +29,10 @@ database_name = "price-watch"
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
 
-# Every minute: due link checks. Hourly: morning digests and the rate-limit purge.
+# One trigger for every job (the Free plan has 5 per account). Every minute: due link checks.
+# At :00 instead: morning digests and the rate-limit purge (src/index.ts picks by the tick time).
 [triggers]
-crons = ["* * * * *", "0 * * * *"]
+crons = ["* * * * *"]
 
 # Secrets, set with `wrangler secret put <NAME> --env production` (locally in .dev.vars):
 #   BETTER_AUTH_SECRET, RESEND_API_KEY, PADDLE_API_KEY, PADDLE_WEBHOOK_SECRET, TURNSTILE_SECRET_KEY
@@ -77,7 +78,7 @@ database_id = "REPLACE_WITH_D1_DATABASE_ID"
 migrations_dir = "migrations"
 
 [env.production.triggers]
-crons = ["* * * * *", "0 * * * *"]
+crons = ["* * * * *"]
 
 [env.production.vars]
 APP_URL = "https://pricedawn.spacesonlabs.com"

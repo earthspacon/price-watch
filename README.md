@@ -53,10 +53,10 @@ A check is one `GET https://<host>/products/<handle>.json` with a 10-second time
 
 Transient failures (429, 403, 5xx, network errors, timeouts) retry after 15 minutes, then 60; the third failure marks the link `blocked`. A product that is gone is `unavailable`, a page that is not Shopify product JSON is `not_shopify`. None of these touch the stored price.
 
-On the Free plan one every-minute cron does at most 20 checks a minute, about 28,800 a day. `DEPLOY.md` covers when to move to Workers Paid.
+On the Free plan one every-minute cron does at most 20 checks a minute, about 28,300 a day (the :00 tick runs the hourly jobs instead). `DEPLOY.md` covers when to move to Workers Paid.
 
 ## How the digest works
 
-The hourly cron wakes each account whose local clock has reached 07:00 and whose local day is newer than the last digest. It reads the price points with a previous price and the links that failed since the last digest, and sends one plain-text email grouped by store. On a quiet day it sends nothing — Resend Free allows 100 emails a day, and a quiet morning should not spend one.
+The hourly job (the :00 tick of the same trigger) wakes each account whose local clock has reached 07:00 and whose local day is newer than the last digest. It reads the price points with a previous price and the links that failed since the last digest, and sends one plain-text email grouped by store. On a quiet day it sends nothing — Resend Free allows 100 emails a day, and a quiet morning should not spend one.
 
 Either way it records the local date and moves the digest cursor, so the next morning starts from a clean slate. A send that fails (provider down or over quota) leaves the account unmarked, and the next hourly run retries it. The digest footer links back to `<APP_URL>/app`.
