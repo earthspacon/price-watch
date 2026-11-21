@@ -1,4 +1,4 @@
-import type { Plan, SubscriptionStatus } from "@price-watch/contract";
+import { isLive, PLANS, type Plan, type SubscriptionStatus } from "@price-watch/contract";
 
 import { newId } from "../ids";
 
@@ -203,3 +203,8 @@ export type AccountContext = {
   plan: Plan | null;
   subscription: SubscriptionStatus;
 };
+
+// Zero without a live plan: nothing is tracked then, and every stored link reads as paused.
+export function getLinkLimit({ account }: { account: AccountContext }) {
+  return account.plan && isLive(account.subscription) ? PLANS[account.plan].linkLimit : 0;
+}

@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 
+import { API_ROUTES } from "../src/app";
 import { addLinks, apiFetch, countRows, findLinkId, productUrl, uniqueEmail } from "./helpers";
 import { postPaddleEvent } from "./paddle";
 import { signInAccount } from "./session";
 
+const LINK_ID_PARAM = ":linkId";
+
 // Every API route that takes a link id; each must hide another account's link behind a 404.
-const ID_ROUTES = [{ method: "DELETE", path: "/api/links/:linkId" }];
+const ID_ROUTES = API_ROUTES.filter((route) => route.pattern.pathname.includes(LINK_ID_PARAM));
 
 function expectSecurityHeaders({ response, label }: { response: Response; label: string }) {
   expect(response.headers.get("content-security-policy"), label).toContain("frame-ancestors 'none'");
@@ -43,14 +46,15 @@ describe("security", () => {
     await addLinks({ cookie: owner.cookie, urls: [productUrl({ host: "rival.example", handle: "linen-shirt" })] });
     const linkId = await findLinkId({ accountId: owner.accountId, host: "rival.example", handle: "linen-shirt" });
 
+    expect(ID_ROUTES.length).toBeGreaterThan(0);
     for (const route of ID_ROUTES) {
       const response = await apiFetch({
         cookie: stranger.cookie,
-        path: route.path.replace(":linkId", linkId),
+        path: route.pattern.pathname.replace(LINK_ID_PARAM, linkId),
         method: route.method,
       });
 
-      expect(response.status, `${route.method} ${route.path}`).toBe(404);
+      expect(response.status, `${route.method} ${route.pattern.pathname}`).toBe(404);
     }
     expect(await countRows({ sql: "SELECT COUNT(*) AS n FROM links WHERE id = ?", binds: [linkId] })).toBe(1);
   });

@@ -74,7 +74,7 @@ const TopBar = () => {
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur">
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 sm:gap-6">
         <Logo to="/app" />
         <nav className="flex gap-1">
           {NAV_ITEMS.map((item) => {
@@ -83,7 +83,7 @@ const TopBar = () => {
         </nav>
       </div>
       <div className="flex items-center gap-3 text-xs text-slate-500">
-        <span className="truncate">{me?.email}</span>
+        <span className="hidden truncate sm:inline">{me?.email}</span>
         <button type="button" onClick={() => signOutClicked()} aria-label="Sign out" className="hover:text-slate-900">
           <LogOut className="size-4" />
         </button>

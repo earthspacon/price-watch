@@ -2,11 +2,13 @@ import type { Plan, SubscriptionStatus } from "@price-watch/contract";
 
 import { HttpError, json, readJson, readString, route, type Route } from "../http";
 import { newId } from "../ids";
+import { runChecks } from "../links/run-checks";
 import { createAccount, getAccountByUserId, setSubscription } from "../repo/accounts";
 import type { PublicContext } from "./context";
 
 const EMAIL_MAX_LENGTH = 254;
 const OUTBOX_LIMIT = 20;
+const ISO_TIME_MAX_LENGTH = 30;
 
 // Dev-only: billing is driven by Paddle, so local runs and tests create accounts here.
 export const devRoutes: Route<PublicContext>[] = [
@@ -31,6 +33,12 @@ export const devRoutes: Route<PublicContext>[] = [
     return json({ userId, accountId }, 201);
   }),
 
+  // The check cron's run at an explicit clock, so tests can step through days.
+  route("POST", "/dev/run-checks", async ({ deps, request }) => {
+    const now = readTime({ data: await readJson(request), key: "now" });
+    return json({ checked: await runChecks({ deps, now }) });
+  }),
+
   route("GET", "/dev/outbox", async ({ deps, request }) => {
     const to = new URL(request.url).searchParams.get("to") ?? "";
     const { results } = await deps.db
@@ -42,6 +50,15 @@ export const devRoutes: Route<PublicContext>[] = [
     return json(results);
   }),
 ];
+
+function readTime({ data, key }: { data: Record<string, unknown>; key: string }) {
+  const time = new Date(readString({ data, key, maxLength: ISO_TIME_MAX_LENGTH }));
+
+  if (Number.isNaN(time.getTime())) {
+    throw new HttpError(400, "invalid_field", `"${key}" must be an ISO date-time`);
+  }
+  return time;
+}
 
 function readPlan(value: unknown): Plan | null {
   return value === "starter" || value === "pro" ? value : null;

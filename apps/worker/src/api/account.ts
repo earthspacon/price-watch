@@ -1,17 +1,18 @@
-import { isLive, PLANS, type MeDto } from "@price-watch/contract";
+import type { MeDto } from "@price-watch/contract";
 
 import { json, route, type Route } from "../http";
+import { getLinkLimit } from "../repo/accounts";
+import { countLinks } from "../repo/links";
 import type { ApiContext } from "./context";
 
-// Link counts arrive with the links feature.
 export const accountRoutes: Route<ApiContext>[] = [
-  route("GET", "/api/me", async ({ account }) => {
+  route("GET", "/api/me", async ({ deps, account }) => {
     const me: MeDto = {
       email: account.email,
       plan: account.plan,
       subscription: account.subscription,
-      linkLimit: account.plan && isLive(account.subscription) ? PLANS[account.plan].linkLimit : 0,
-      linkCount: 0,
+      linkLimit: getLinkLimit({ account }),
+      linkCount: await countLinks({ db: deps.db, accountId: account.accountId }),
       timeZone: account.timeZone,
     };
     return json(me);
