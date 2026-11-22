@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL, REFUND_DAYS, SITE_BRAND, SITE_NAME, SELLER_LEGAL_NAME } from "./config";
+import { CONTACT_EMAIL, REFUND_DAYS, SITE_NAME, SELLER_LEGAL_NAME } from "./config";
 
 export type LegalSlug = "terms" | "privacy" | "refunds";
 
@@ -102,4 +102,4 @@ export const LEGAL_DOCUMENTS: Record<LegalSlug, LegalDocument> = {
   },
 };
 
-export const LEGAL_SELLER_LINE = `${SITE_NAME} is a product of ${SITE_BRAND}. The seller is ${SELLER_LEGAL_NAME}. Contact: ${CONTACT_EMAIL}.`;
+export const LEGAL_SELLER_LINE = `${SITE_NAME} is a product of ${SELLER_LEGAL_NAME}. Contact: ${CONTACT_EMAIL}.`;

@@ -148,6 +148,7 @@ describe("prerendered public site", () => {
     for (const legal of [terms, privacy, refunds]) {
       expect(legal).toContain("Spaceson Labs");
       expect(legal).toContain(SELLER_LEGAL_NAME);
+      expect(legal).not.toMatch(/SELLER_LEGAL_NAME|REPLACE_WITH/);
       expect(legal).toContain(CONTACT_EMAIL);
       expect(legal).toContain("pricedawn@spacesonlabs.com");
     }
