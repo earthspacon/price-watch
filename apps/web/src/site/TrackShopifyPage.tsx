@@ -50,11 +50,11 @@ export const TrackShopifyPage = () => {
       </section>
       <p className="text-sm text-slate-600">
         Ready to stop checking tabs?{" "}
-        <a href="/pricing" className="font-medium text-brand-700 hover:underline">
+        <a href="/pricing" className="font-medium text-brand-ink hover:underline">
           See the plans
         </a>{" "}
         or{" "}
-        <a href="/sign-in" className="font-medium text-brand-700 hover:underline">
+        <a href="/sign-in" className="font-medium text-brand-ink hover:underline">
           start with your email
         </a>
         .

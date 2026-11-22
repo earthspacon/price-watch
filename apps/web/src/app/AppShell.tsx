@@ -3,6 +3,7 @@ import { CreditCard, Link as LinkIcon, LogOut, TrendingDown, type LucideIcon } f
 import { Link, Navigate, NavLink, Outlet } from "react-router-dom";
 
 import { $me, $sessionError, $sessionStatus, meRefreshRequested, signOutClicked } from "../session/model";
+import { ThemeToggle } from "../shared/ThemeToggle";
 import { ErrorState, LoadingState } from "../shared/ui";
 
 type NavItem = { to: string; label: string; icon: LucideIcon };
@@ -73,7 +74,7 @@ const TopBar = () => {
   const { me } = useUnit({ me: $me });
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur">
+    <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-slate-200 bg-surface/90 sm:gap-4 px-4 py-3 backdrop-blur">
       <div className="flex items-center gap-3 sm:gap-6">
         <Logo to="/app" />
         <nav className="flex gap-1">
@@ -82,8 +83,9 @@ const TopBar = () => {
           })}
         </nav>
       </div>
-      <div className="flex items-center gap-3 text-xs text-slate-500">
+      <div className="flex items-center gap-2 text-xs text-slate-500 sm:gap-3">
         <span className="hidden truncate sm:inline">{me?.email}</span>
+        <ThemeToggle />
         <button type="button" onClick={() => signOutClicked()} aria-label="Sign out" className="hover:text-slate-900">
           <LogOut className="size-4" />
         </button>
@@ -100,7 +102,7 @@ const NavButton = ({ item }: { item: NavItem }) => {
       to={item.to}
       end
       className={({ isActive }) => {
-        return `flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium ${isActive ? "bg-brand-50 text-brand-700" : "text-slate-600 hover:bg-slate-50"}`;
+        return `flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium ${isActive ? "bg-brand-50 text-brand-ink" : "text-slate-600 hover:bg-slate-50"}`;
       }}
     >
       <Icon className="size-4" />

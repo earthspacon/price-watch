@@ -4,11 +4,11 @@ import type { ReactNode } from "react";
 export const BUTTON_PRIMARY =
   "inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50";
 export const BUTTON_SECONDARY =
-  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50";
+  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-surface px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50";
 export const BUTTON_DANGER =
   "inline-flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50";
 export const INPUT =
-  "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none";
+  "mt-1 w-full rounded-lg border border-slate-300 bg-surface px-3 py-2 text-sm focus:border-brand-500 focus:outline-none";
 
 const DATE_FORMAT = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -25,7 +25,7 @@ const DAY_FORMAT = new Intl.DateTimeFormat("en-US", {
 
 export const Card = ({ children, className = "" }: { children: ReactNode; className?: string }) => {
   return (
-    <section className={`min-w-0 rounded-xl border border-slate-200 bg-white shadow-sm ${className}`}>
+    <section className={`min-w-0 rounded-xl border border-slate-200 bg-surface shadow-sm ${className}`}>
       {children}
     </section>
   );
@@ -52,7 +52,7 @@ export const LoadingState = ({ label = "Loading…" }: { label?: string }) => {
 export const ErrorState = ({ message, onRetry }: { message: string; onRetry: () => void }) => {
   return (
     <Card className="space-y-3 p-8 text-center text-sm">
-      <p className="flex items-center justify-center gap-2 font-medium text-rose-700">
+      <p className="flex items-center justify-center gap-2 font-medium text-rose-800">
         <AlertTriangle className="size-4" />
         {message}
       </p>
@@ -78,5 +78,5 @@ export function formatDay(iso: string) {
 const BANNER_TONES = {
   warning: "border-amber-200 bg-amber-50 text-amber-900",
   danger: "border-rose-200 bg-rose-50 text-rose-900",
-  info: "border-brand-100 bg-brand-50 text-brand-700",
+  info: "border-brand-100 bg-brand-50 text-brand-ink",
 };

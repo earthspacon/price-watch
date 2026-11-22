@@ -206,7 +206,7 @@ const LinksList = () => {
       <ul className="space-y-3 md:hidden">
         {links.map((link) => {
           return (
-            <li key={link.id} className="min-w-0 space-y-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <li key={link.id} className="min-w-0 space-y-2 rounded-xl border border-slate-200 bg-surface p-4 shadow-sm">
               <LinkTitle link={link} />
               <p className="text-sm font-medium">{formatPrice(link)}</p>
               <LinkChange link={link} />
@@ -228,7 +228,7 @@ const LinkTitle = ({ link }: { link: LinkDto }) => {
         href={link.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block break-all font-medium text-brand-700 hover:underline"
+        className="block break-all font-medium text-brand-ink hover:underline"
       >
         {link.title ?? link.url.replace(URL_SCHEME, "")}
       </a>

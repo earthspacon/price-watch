@@ -13,9 +13,9 @@ export const ToastView = () => {
   return (
     <div
       role="status"
-      className="fixed inset-x-4 bottom-20 z-40 mx-auto flex max-w-sm items-center gap-2 rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-lg lg:bottom-6"
+      className="fixed inset-x-4 bottom-20 z-40 mx-auto flex max-w-sm items-center gap-2 rounded-lg border border-slate-300 bg-slate-200 px-4 py-3 text-sm text-slate-900 shadow-lg lg:bottom-6"
     >
-      <Icon className={`size-4 shrink-0 ${toast.tone === "success" ? "text-emerald-400" : "text-rose-400"}`} />
+      <Icon className={`size-4 shrink-0 ${toast.tone === "success" ? "text-emerald-700" : "text-rose-800"}`} />
       {toast.text}
     </div>
   );

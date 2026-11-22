@@ -33,7 +33,7 @@ export const PrisyncAlternativePage = () => {
           store and only need to know what changed overnight, you can pay a lot less.
         </p>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-surface shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
             <tr>
@@ -71,7 +71,7 @@ export const PrisyncAlternativePage = () => {
             return (
               <span key={source.href}>
                 {index > 0 && " and "}
-                <a href={source.href} className="font-medium text-brand-700 hover:underline">
+                <a href={source.href} className="font-medium text-brand-ink hover:underline">
                   {source.label}
                 </a>
               </span>
@@ -84,7 +84,7 @@ export const PrisyncAlternativePage = () => {
           Shopify product links you paste, and one morning email with what changed.
         </p>
       </section>
-      <p className="rounded-xl border border-brand-100 bg-brand-50 p-5 text-sm text-brand-700">
+      <p className="rounded-xl border border-brand-100 bg-brand-50 p-5 text-sm text-brand-ink">
         Want the daily email without the enterprise plan?{" "}
         <a href="/pricing" className="font-semibold underline">
           See PriceDawn pricing

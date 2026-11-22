@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { ThemeToggle } from "../shared/ThemeToggle";
 import { SITE_BRAND, SITE_NAME } from "./config";
 
 type NavItem = {
@@ -47,10 +48,10 @@ const FOOTER_ITEMS: readonly NavItem[] = [
 
 export const SiteLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex min-h-screen flex-col bg-white text-slate-900">
+    <div className="flex min-h-screen flex-col bg-surface text-slate-900">
       <header className="border-b border-slate-200">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-4 lg:px-8">
-          <a href="/" className="text-lg font-semibold tracking-tight text-brand-700">
+          <a href="/" className="text-lg font-semibold tracking-tight text-brand-ink">
             {SITE_NAME}
           </a>
           <nav className="flex items-center gap-4 text-sm text-slate-600">
@@ -61,6 +62,7 @@ export const SiteLayout = ({ children }: { children: ReactNode }) => {
                 </a>
               );
             })}
+            <ThemeToggle />
             <a
               href="/sign-in"
               className="rounded-lg bg-brand-600 px-3 py-1.5 font-medium text-white hover:bg-brand-700"

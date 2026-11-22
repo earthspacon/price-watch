@@ -63,7 +63,7 @@ const BeforeAfter = () => {
           <p className="text-slate-600">Same four products. One is a hand check, the other is the morning email.</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="space-y-3 rounded-xl border border-slate-200 bg-surface p-6 shadow-sm">
             <h3 className="font-semibold">By hand: four tabs, every morning</h3>
             <ul className="space-y-2 text-sm text-slate-700">
               {MANUAL_TABS.map((tab) => {
@@ -79,7 +79,7 @@ const BeforeAfter = () => {
               You open each tab, read the price and try to remember yesterday's number.
             </p>
           </div>
-          <div className="space-y-3 rounded-xl border border-brand-100 bg-white p-6 shadow-sm">
+          <div className="space-y-3 rounded-xl border border-brand-100 bg-surface p-6 shadow-sm">
             <h3 className="font-semibold">PriceDawn: one email at 7:00</h3>
             <div className="space-y-1 rounded-lg bg-slate-50 p-4 font-mono text-sm text-slate-700">
               <p>rival.example</p>
@@ -103,8 +103,8 @@ const HowItWorks = () => {
       <ol className="grid gap-4 md:grid-cols-3">
         {STEPS.map((step, index) => {
           return (
-            <li key={step} className="space-y-2 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <span className="flex size-8 items-center justify-center rounded-full bg-brand-50 font-semibold text-brand-700">
+            <li key={step} className="space-y-2 rounded-xl border border-slate-200 bg-surface p-6 shadow-sm">
+              <span className="flex size-8 items-center justify-center rounded-full bg-brand-50 font-semibold text-brand-ink">
                 {index + 1}
               </span>
               <p className="text-sm text-slate-700">{step}</p>
@@ -124,7 +124,7 @@ const Faq = () => {
         <div className="space-y-3">
           {FAQ_ITEMS.map((item) => {
             return (
-              <details key={item.question} className="rounded-xl border border-slate-200 bg-white p-4">
+              <details key={item.question} className="rounded-xl border border-slate-200 bg-surface p-4">
                 <summary className="cursor-pointer font-medium">{item.question}</summary>
                 <p className="mt-2 text-sm text-slate-600">{item.answer}</p>
               </details>

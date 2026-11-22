@@ -29,11 +29,11 @@ export const PricingPage = () => {
       </div>
       <p className="text-center text-sm text-slate-600">
         Questions before you pay? Read the{" "}
-        <a href="/track-shopify-competitor-prices" className="font-medium text-brand-700 hover:underline">
+        <a href="/track-shopify-competitor-prices" className="font-medium text-brand-ink hover:underline">
           guide
         </a>{" "}
         or{" "}
-        <a href="/sign-in" className="font-medium text-brand-700 hover:underline">
+        <a href="/sign-in" className="font-medium text-brand-ink hover:underline">
           start with an email sign-in
         </a>
         .

@@ -138,12 +138,12 @@ const GoogleMark = () => {
 const LinkSent = ({ email }: { email: string }) => {
   return (
     <Card className="space-y-3 p-6 text-center">
-      <MailCheck className="mx-auto size-8 text-brand-600" />
+      <MailCheck className="mx-auto size-8 text-brand-ink" />
       <h1 className="text-xl font-semibold">Check your email</h1>
       <p className="text-sm text-slate-600">
         We sent a sign-in link to <span className="font-medium">{email}</span>. It works once and expires in 15 minutes.
       </p>
-      <button type="button" onClick={() => anotherEmailClicked()} className="text-sm font-medium text-brand-700">
+      <button type="button" onClick={() => anotherEmailClicked()} className="text-sm font-medium text-brand-ink">
         Use another email
       </button>
     </Card>
