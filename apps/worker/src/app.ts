@@ -6,6 +6,7 @@ import type { ApiContext, PublicContext } from "./api/context";
 import { devRoutes } from "./api/dev";
 import { exportRoutes } from "./api/export";
 import { linkRoutes } from "./api/links";
+import { toolRoutes } from "./api/tools";
 import { createAuth, isGoogleSignInEnabled } from "./auth";
 import { handlePaddleWebhook } from "./billing/webhook";
 import type { Deps } from "./deps";
@@ -17,6 +18,7 @@ import { guardAuthRequest } from "./shield/auth-guard";
 export const API_ROUTES: Route<ApiContext>[] = [...accountRoutes, ...billingRoutes, ...exportRoutes, ...linkRoutes];
 const READ_METHODS = new Set(["GET", "HEAD"]);
 const AUTH_PREFIX = "/api/auth/";
+const TOOLS_PREFIX = "/api/tools/";
 const PADDLE_WEBHOOK_PATH = "/paddle/webhook";
 // SPA routes that must get the empty app shell, not the prerendered landing page in index.html.
 const APP_SHELL_PATH = /^\/(app|app\/.*|sign-in)$/;
@@ -57,6 +59,9 @@ async function routeRequest({ deps, request }: { deps: Deps; request: Request })
   if (pathname.startsWith("/dev/")) {
     return routeDevRequest({ deps, request });
   }
+  if (pathname.startsWith(TOOLS_PREFIX)) {
+    return routeToolRequest({ deps, request });
+  }
   if (pathname.startsWith("/api/")) {
     return routeApiRequest({ deps, request });
   }
@@ -86,6 +91,20 @@ async function serveNotFoundPage({ assets, request }: { assets: Fetcher; request
 
 async function routeDevRequest({ deps, request }: { deps: Deps; request: Request }) {
   const match = isDev(deps.env) ? matchRoute<PublicContext>({ routes: devRoutes, request }) : null;
+
+  if (!match) {
+    throw new HttpError(404, "not_found", "Not found");
+  }
+  return match.route.handler({
+    deps,
+    request,
+    params: match.params,
+  });
+}
+
+// Free tools answer without a session; each route does its own bot check and per-IP limit.
+async function routeToolRequest({ deps, request }: { deps: Deps; request: Request }) {
+  const match = matchRoute<PublicContext>({ routes: toolRoutes, request });
 
   if (!match) {
     throw new HttpError(404, "not_found", "Not found");

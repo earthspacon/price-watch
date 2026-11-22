@@ -22,15 +22,11 @@ const PRICE = /^(\d+)(?:\.(\d{1,2}))?$/;
 const CENTS_PER_UNIT = 100;
 const CENT_DIGITS = 2;
 
-type Variant = { id: string; title: string; priceCents: number };
+type Variant = { id: string; title: string; priceCents: number; compareAtCents: number | null };
 
 export function createStoreFetcher({ env }: { env: Env }): StoreFetcher {
-  const devOrigin = isDev(env) ? env.DEV_STORE_ORIGIN : "";
-
   return ({ host, handle }) => {
-    const origin = devOrigin ? `${devOrigin}/${host}` : `https://${host}`;
-
-    return fetch(`${origin}/products/${handle}.json`, {
+    return fetch(buildProductJsonUrl({ env, host, handle }), {
       headers: {
         accept: "application/json",
         "user-agent": STORE_USER_AGENT,
@@ -38,6 +34,14 @@ export function createStoreFetcher({ env }: { env: Env }): StoreFetcher {
       signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
     });
   };
+}
+
+// Local runs and e2e point DEV_STORE_ORIGIN at the fake store; production always asks the store itself.
+export function buildProductJsonUrl({ env, host, handle }: { env: Env; host: string; handle: string }) {
+  const devOrigin = isDev(env) ? env.DEV_STORE_ORIGIN : "";
+  const origin = devOrigin ? `${devOrigin}/${host}` : `https://${host}`;
+
+  return `${origin}/products/${handle}.json`;
 }
 
 export async function checkLink({ link, fetchStore }: { link: CheckedLink; fetchStore: StoreFetcher }) {
@@ -57,7 +61,7 @@ export async function checkLink({ link, fetchStore }: { link: CheckedLink; fetch
   const result: CheckResult = {
     kind: "ok",
     title: product.title,
-    variantTitle: variant.title === DEFAULT_VARIANT_TITLE ? null : variant.title,
+    variantTitle: isDefaultVariantTitle(variant.title) ? null : variant.title,
     priceCents: variant.priceCents,
   };
   return result;
@@ -82,7 +86,7 @@ async function readStoreAnswer({ link, fetchStore }: { link: CheckedLink; fetchS
   }
 }
 
-function isTransientStatus(status: number) {
+export function isTransientStatus(status: number) {
   return status === HTTP_FORBIDDEN || status === HTTP_TOO_MANY_REQUESTS || status >= HTTP_SERVER_ERROR;
 }
 
@@ -94,7 +98,7 @@ function gone(): CheckResult {
   return { kind: "gone" };
 }
 
-function parseProduct(text: string) {
+export function parseProduct(text: string) {
   const data = parseJson(text);
   const product = isRecord(data) ? data.product : null;
 
@@ -103,6 +107,10 @@ function parseProduct(text: string) {
   }
   const variants = product.variants.map(parseVariant).filter((variant) => variant !== null);
   return { title: product.title, variants };
+}
+
+export function isDefaultVariantTitle(title: string) {
+  return title === DEFAULT_VARIANT_TITLE;
 }
 
 function parseJson(text: string): unknown {
@@ -122,7 +130,9 @@ function parseVariant(value: unknown): Variant | null {
   if (priceCents === null || (typeof value.id !== "number" && typeof value.id !== "string")) {
     return null;
   }
-  return { id: String(value.id), title: value.title, priceCents };
+  const compareAtCents = typeof value.compare_at_price === "string" ? parsePriceCents(value.compare_at_price) : null;
+
+  return { id: String(value.id), title: value.title, priceCents, compareAtCents };
 }
 
 // Prices are decimal strings ("24.99", "24.9", "1500"); integer cents avoid float rounding.

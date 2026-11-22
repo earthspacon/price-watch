@@ -8,7 +8,7 @@ type StoreReply = { status: number; body: string; delayMs: number };
 
 export const LINEN_SHIRT: ShopifyProduct = JSON.parse(productJson).product;
 
-export const storeRequests: Array<{ url: string; userAgent: string | null }> = [];
+export const storeRequests: Array<{ url: string; userAgent: string | null; redirect: string }> = [];
 
 const PRODUCT_JSON_URL = /^https:\/\/([a-z0-9-]+(?:\.[a-z0-9-]+)*\.example)\/products\/([^/?#]+)\.json$/;
 const replies = new Map<string, StoreReply>();
@@ -28,6 +28,7 @@ export function installFakeStores() {
     storeRequests.push({
       url: request.url,
       userAgent: request.headers.get("user-agent"),
+      redirect: request.redirect,
     });
     const reply = replies.get(storeKey({ host: match[1], handle: match[2] }));
 

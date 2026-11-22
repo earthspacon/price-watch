@@ -21,6 +21,7 @@ try {
   await mkdir(DIST, { recursive: true });
 
   for (const { file, content } of buildPrerenderedFiles(template)) {
+    await mkdir(path.dirname(path.join(DIST, file)), { recursive: true });
     await writeFile(path.join(DIST, file), content);
   }
 } finally {

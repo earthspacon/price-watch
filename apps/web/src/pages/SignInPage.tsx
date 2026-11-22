@@ -1,6 +1,6 @@
 import { useGate, useUnit } from "effector-react";
 import { MailCheck } from "lucide-react";
-import { useEffect, useRef, type FormEvent } from "react";
+import type { FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { Logo } from "../app/AppShell";
@@ -21,7 +21,7 @@ import {
   turnstileExpired,
   turnstileSolved,
 } from "../session/sign-in-model";
-import { loadTurnstile, TURNSTILE_SITE_KEY } from "../session/turnstile";
+import { TurnstileWidget } from "../shared/TurnstileWidget";
 import { Banner, BUTTON_PRIMARY, BUTTON_SECONDARY, Card, INPUT } from "../shared/ui";
 
 export const SignInPage = () => {
@@ -79,7 +79,7 @@ const SignInForm = () => {
             className={INPUT}
           />
         </label>
-        <TurnstileWidget key={round} />
+        <TurnstileWidget key={round} onSolved={turnstileSolved} onExpired={turnstileExpired} />
         <button type="submit" disabled={isSending || !token} className={`${BUTTON_PRIMARY} w-full`}>
           {isSending ? "Sending…" : linkError ? "Send a new link" : "Email me a sign-in link"}
         </button>
@@ -133,42 +133,6 @@ const GoogleMark = () => {
       />
     </svg>
   );
-};
-
-// Cloudflare's bot check; the token it returns goes with the request so the server can verify it.
-const TurnstileWidget = () => {
-  const container = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let widgetId = "";
-    let isMounted = true;
-
-    loadTurnstile()
-      .then((turnstile) => {
-        if (!isMounted || !container.current) {
-          return;
-        }
-        widgetId = turnstile.render(container.current, {
-          sitekey: TURNSTILE_SITE_KEY,
-          size: "flexible",
-          callback: turnstileSolved,
-          "expired-callback": turnstileExpired,
-          "error-callback": turnstileExpired,
-        });
-      })
-      .catch(() => {
-        turnstileExpired();
-      });
-
-    return () => {
-      isMounted = false;
-      if (widgetId) {
-        window.turnstile?.remove(widgetId);
-      }
-    };
-  }, []);
-
-  return <div ref={container} className="min-h-[65px]" />;
 };
 
 const LinkSent = ({ email }: { email: string }) => {

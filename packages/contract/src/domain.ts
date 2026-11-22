@@ -42,6 +42,21 @@ export type AddLinksResult = {
   skipped: Array<{ line: number; text: string; reason: SkipReason }>;
 };
 
+export const PRICE_CHECKER_PATH = "/api/tools/shopify-price-checker";
+export const PRICE_CHECKER_RUNS_PER_DAY = 10;
+
+export type PriceCheckVariantDto = {
+  id: string;
+  title: string | null;
+  priceCents: number;
+  compareAtCents: number | null;
+};
+
+// "blocked": the store refused or didn't answer; "not_found": no Shopify product data at that link.
+export type PriceCheckDto =
+  | { status: "ok"; storeHost: string; title: string; variants: PriceCheckVariantDto[] }
+  | { status: "blocked" | "not_found"; storeHost: string };
+
 export type BillingDto = {
   plan: Plan | null;
   subscription: SubscriptionStatus;

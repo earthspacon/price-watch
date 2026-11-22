@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { LandingPage } from "../site/LandingPage";
 import { LegalPage } from "../site/LegalPage";
 import { NotFoundPage } from "../site/NotFoundPage";
+import { PRICE_CHECKER_TITLE, PriceCheckerPage } from "../site/PriceCheckerPage";
 import { PricingPage } from "../site/PricingPage";
 import { PrisyncAlternativePage } from "../site/PrisyncAlternativePage";
 import { SiteLayout } from "../site/SiteLayout";
@@ -64,6 +65,14 @@ const PAGES: readonly PageDefinition[] = [
     title: "How to track Shopify competitor prices — PriceDawn",
     description: "The manual way, the spreadsheet way and the tracked way to follow a competitor's Shopify prices.",
     render: () => <TrackShopifyPage />,
+  },
+  {
+    path: "/tools/shopify-price-checker",
+    file: "tools/shopify-price-checker.html",
+    title: `${PRICE_CHECKER_TITLE}: free, no sign-up | PriceDawn`,
+    description:
+      "Paste a Shopify product link and see each variant's current price and compare-at price. Free, no sign-up.",
+    render: () => <PriceCheckerPage />,
   },
   {
     path: "/terms",

@@ -28,6 +28,10 @@ const FOOTER_ITEMS: readonly NavItem[] = [
     label: "Pricing",
   },
   {
+    href: "/tools/shopify-price-checker",
+    label: "Free price checker",
+  },
+  {
     href: "/terms",
     label: "Terms",
   },

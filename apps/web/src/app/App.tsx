@@ -6,6 +6,7 @@ import { SignInPage } from "../pages/SignInPage";
 import { LandingPage } from "../site/LandingPage";
 import { LegalPage } from "../site/LegalPage";
 import { NotFoundPage } from "../site/NotFoundPage";
+import { PriceCheckerPage } from "../site/PriceCheckerPage";
 import { PricingPage } from "../site/PricingPage";
 import { PrisyncAlternativePage } from "../site/PrisyncAlternativePage";
 import { SiteLayout } from "../site/SiteLayout";
@@ -30,6 +31,7 @@ export const AppRoutes = () => {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/prisync-alternative" element={<PrisyncAlternativePage />} />
           <Route path="/track-shopify-competitor-prices" element={<TrackShopifyPage />} />
+          <Route path="/tools/shopify-price-checker" element={<PriceCheckerPage />} />
           <Route path="/terms" element={<LegalPage slug="terms" />} />
           <Route path="/privacy" element={<LegalPage slug="privacy" />} />
           <Route path="/refunds" element={<LegalPage slug="refunds" />} />

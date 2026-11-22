@@ -14,12 +14,14 @@ const PUBLIC_PATHS = [
   "/pricing",
   "/prisync-alternative",
   "/track-shopify-competitor-prices",
+  "/tools/shopify-price-checker",
   "/terms",
   "/privacy",
   "/refunds",
 ];
 const LEGAL_PATHS = ["/terms", "/privacy", "/refunds"];
-const FOOTER_PATHS = ["/pricing", ...LEGAL_PATHS];
+const PRICE_CHECKER_PATH = "/tools/shopify-price-checker";
+const FOOTER_PATHS = ["/pricing", PRICE_CHECKER_PATH, ...LEGAL_PATHS];
 const PLAN_ORDER: Plan[] = ["starter", "pro"];
 const HERO_TEXT =
   "Wake up to your competitors' price changes: a daily email for Shopify store owners who check rival prices by hand.";
@@ -132,6 +134,19 @@ describe("prerendered public site", () => {
     expect(text).toMatch(/spreadsheet/i);
     expect(text).toContain("PriceDawn");
     expect(text).toContain("7:00");
+  });
+
+  it("the free price checker works without sign-up, states its limit and leads to the plans", () => {
+    const html = readPage(PRICE_CHECKER_PATH);
+    const heading = readText(/<h1[^>]*>(.*?)<\/h1>/s.exec(html)?.[1] ?? "");
+    const text = readText(html);
+
+    expect(heading).toBe("See the current price of any Shopify product");
+    expect(text).toMatch(/no sign-up/i);
+    expect(text).toContain("10 checks a day");
+    expect(text).toMatch(/blocked/i);
+    expect(text).toMatch(/compare-at price/i);
+    expect(html).toContain('href="/pricing"');
   });
 
   it("R28: legal pages name Paddle and the sub-processors", () => {
