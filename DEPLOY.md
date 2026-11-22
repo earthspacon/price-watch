@@ -1,6 +1,6 @@
 # Deploying PriceDawn
 
-Run these in order once the Cloudflare, Paddle, Resend and Google accounts exist. Every command runs from `apps/worker` unless it says otherwise. Production config is the `[env.production]` block in `apps/worker/wrangler.toml`; the app runs on the subdomain `pricedawn.spacesonlabs.com` of the existing `spacesonlabs.com` zone.
+Run these in order once the Cloudflare, Paddle, Brevo and Google accounts exist. Every command runs from `apps/worker` unless it says otherwise. Production config is the `[env.production]` block in `apps/worker/wrangler.toml`; the app runs on the subdomain `pricedawn.spacesonlabs.com` of the existing `spacesonlabs.com` zone.
 
 Names used below:
 
@@ -28,12 +28,12 @@ Names used below:
 2. Copy the printed `database_id` into `[[env.production.d1_databases]]` in `wrangler.toml` (replace `REPLACE_WITH_D1_DATABASE_ID`).
 3. `pnpm exec wrangler d1 migrations apply price-watch --remote --env production` (applies `0001_init.sql`).
 
-## 3. Resend (outbound mail)
+## 3. Brevo (outbound mail)
 
-1. Resend → Domains → Add `mail.spacesonlabs.com`.
-2. Add the DNS records Resend shows (DKIM `TXT`, the SPF `MX` + `TXT` on the `send` subdomain, optional DMARC `TXT`) in Cloudflare DNS. Set them to **DNS only** (grey cloud). Wait for "Verified".
-3. Resend → API Keys → create a key with "Sending access" for that domain. Keep it for step 7.
-4. The Free plan sends 100 emails a day. PriceDawn sends one digest per account per day, and nothing on a quiet day, so 100 is enough for the first hundred accounts. Upgrade to Resend Pro ($20/mo, 50,000 emails) before a hundred active accounts, or before any launch mail beyond digests. Failed sends are not lost: the account stays unmarked and the next hourly run retries.
+1. Brevo → Senders, domains, IPs → Domains → Add `mail.spacesonlabs.com`.
+2. Add the DNS records Brevo shows (the `brevo-code` `TXT`, two DKIM `CNAME`s, DMARC `TXT`) in Cloudflare DNS, **DNS only** (grey cloud). Wait for "Authenticated".
+3. Brevo → SMTP & API → API keys → a restricted key with "Transactional email: All". Keep it for step 7.
+4. The Free plan sends 300 emails a day, shared by every product on the account. PriceDawn sends one digest per account per day, and nothing on a quiet day. Move to a paid Brevo plan before the products together get near 300 mails a day. Failed sends are not lost: the account stays unmarked and the next hourly run retries.
 
 ## 4. Paddle (live account, after the domain review passes)
 
@@ -97,7 +97,7 @@ Each command prompts for the value; never put them in `wrangler.toml`.
 
 ```sh
 openssl rand -base64 48 | pnpm exec wrangler secret put BETTER_AUTH_SECRET --env production
-pnpm exec wrangler secret put RESEND_API_KEY --env production
+pnpm exec wrangler secret put BREVO_API_KEY --env production
 pnpm exec wrangler secret put PADDLE_API_KEY --env production
 pnpm exec wrangler secret put PADDLE_WEBHOOK_SECRET --env production
 pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env production

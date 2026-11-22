@@ -10,19 +10,27 @@ export type Mailer = {
   send: (mail: OutboundMail) => Promise<void>;
 };
 
-const RESEND_URL = "https://api.resend.com/emails";
+const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
+const NAME_AND_ADDRESS = /^(.*)<([^>]+)>\s*$/;
+const URL_IN_TEXT = /https?:\/\/[^\s<]+/g;
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+};
 
 export function createMailer(env: Env): Mailer {
-  if (env.RESEND_API_KEY) {
-    return createResendMailer({
-      apiKey: env.RESEND_API_KEY,
+  if (env.BREVO_API_KEY) {
+    return createBrevoMailer({
+      apiKey: env.BREVO_API_KEY,
       from: env.MAIL_FROM,
     });
   }
   if (isDev(env)) {
     return createLogMailer({ db: env.DB });
   }
-  throw new Error("RESEND_API_KEY is not set");
+  throw new Error("BREVO_API_KEY is not set");
 }
 
 export function createLogMailer({ db }: { db: D1Database }): Mailer {
@@ -36,26 +44,53 @@ export function createLogMailer({ db }: { db: D1Database }): Mailer {
   };
 }
 
-export function createResendMailer({ apiKey, from }: { apiKey: string; from: string }): Mailer {
+export function createBrevoMailer({ apiKey, from }: { apiKey: string; from: string }): Mailer {
+  const sender = parseSender(from);
+
   return {
     send: async ({ to, subject, text }) => {
-      const response = await fetch(RESEND_URL, {
+      const response = await fetch(BREVO_URL, {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          authorization: `Bearer ${apiKey}`,
+          accept: "application/json",
+          "api-key": apiKey,
         },
         body: JSON.stringify({
-          from,
-          to: [to],
+          sender,
+          to: [{ email: to }],
           subject,
-          text,
+          textContent: text,
+          htmlContent: buildHtmlFromText(text),
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Resend returned ${response.status}`);
+        throw new Error(`Brevo returned ${response.status}`);
       }
     },
   };
+}
+
+// "Name <address>" in MAIL_FROM becomes Brevo's { name, email } sender.
+function parseSender(from: string) {
+  const match = NAME_AND_ADDRESS.exec(from);
+  if (!match) {
+    return { email: from.trim() };
+  }
+  return {
+    name: match[1].trim(),
+    email: match[2].trim(),
+  };
+}
+
+// Brevo needs an HTML body, so plain-text mails get an escaped copy with clickable links.
+function buildHtmlFromText(text: string) {
+  const escaped = text.replace(/[&<>"]/g, (char) => {
+    return HTML_ESCAPES[char];
+  });
+  const linked = escaped.replace(URL_IN_TEXT, (url) => {
+    return `<a href="${url}">${url}</a>`;
+  });
+  return `<p>${linked.replaceAll("\n", "<br>")}</p>`;
 }

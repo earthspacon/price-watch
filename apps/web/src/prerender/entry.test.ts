@@ -30,7 +30,7 @@ const COMPETITOR_SOURCES = [
   /href="https:\/\/(www\.)?pricemole\.io\/pricing\/?"/,
 ];
 const SOURCES_CHECKED = "checked November 21, 2026";
-const SUB_PROCESSORS = ["Cloudflare", "Resend", "Paddle", "Google"];
+const SUB_PROCESSORS = ["Cloudflare", "Brevo", "Paddle", "Google"];
 const OG_IMAGE_FILE = path.resolve(import.meta.dirname, "../../public/og.png");
 const OG_IMAGE_SIZE = {
   width: 1200,

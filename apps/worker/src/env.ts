@@ -11,7 +11,7 @@ export type Env = {
   OWNER_ALERT_EMAIL?: string;
   DEV_STORE_ORIGIN?: string;
   BETTER_AUTH_SECRET: string;
-  RESEND_API_KEY?: string;
+  BREVO_API_KEY?: string;
   PADDLE_API_KEY?: string;
   PADDLE_WEBHOOK_SECRET?: string;
   TURNSTILE_SECRET_KEY?: string;

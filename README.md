@@ -24,7 +24,7 @@ pnpm db:migrate                  # applies migrations/ to the local D1
 pnpm dev                         # wrangler dev on http://localhost:8787
 ```
 
-With `DEV_ROUTES=1` the app talks to a local outbox and a fake store instead of Resend and Shopify:
+With `DEV_ROUTES=1` the app talks to a local outbox and a fake store instead of Brevo and Shopify:
 
 - Sign-in links go to the `dev_outbox` table. Read them with `GET /dev/outbox?to=<email>`.
 - `POST /dev/accounts {"email": "...", "plan": "starter"}` creates an account without Paddle. Add `"status": "active"` to skip the plan step.
@@ -41,7 +41,7 @@ pnpm --filter @price-watch/web test:e2e   # end-to-end tests in a real browser a
 pnpm --filter @price-watch/web shots      # page captures and a console-error check
 ```
 
-Every test uses a fixed clock through the dev routes, so a "day" is a `POST /dev/run-checks` call and a "morning" is a `POST /dev/run-digests` call. No real Shopify, Resend or Paddle call is made: the fake store answers price checks and the Paddle webhook payloads are signed locally.
+Every test uses a fixed clock through the dev routes, so a "day" is a `POST /dev/run-checks` call and a "morning" is a `POST /dev/run-digests` call. No real Shopify, Brevo or Paddle call is made: the fake store answers price checks and the Paddle webhook payloads are signed locally.
 
 Deploying once the accounts exist: [`DEPLOY.md`](DEPLOY.md).
 
@@ -57,6 +57,6 @@ On the Free plan one every-minute cron does at most 20 checks a minute, about 28
 
 ## How the digest works
 
-The hourly job (the :00 tick of the same trigger) wakes each account whose local clock has reached 07:00 and whose local day is newer than the last digest. It reads the price points with a previous price and the links that failed since the last digest, and sends one plain-text email grouped by store. On a quiet day it sends nothing — Resend Free allows 100 emails a day, and a quiet morning should not spend one.
+The hourly job (the :00 tick of the same trigger) wakes each account whose local clock has reached 07:00 and whose local day is newer than the last digest. It reads the price points with a previous price and the links that failed since the last digest, and sends one plain-text email grouped by store. On a quiet day it sends nothing — Brevo Free allows 300 emails a day, and a quiet morning should not spend one.
 
 Either way it records the local date and moves the digest cursor, so the next morning starts from a clean slate. A send that fails (provider down or over quota) leaves the account unmarked, and the next hourly run retries it. The digest footer links back to `<APP_URL>/app`.

@@ -63,7 +63,7 @@ export const LEGAL_DOCUMENTS: Record<LegalSlug, LegalDocument> = {
       {
         heading: "Sub-processors",
         paragraphs: [
-          "Cloudflare hosts the application and its database. Resend sends the sign-in and digest emails. Paddle handles payments and invoices. Google is used only when you choose Google sign-in.",
+          "Cloudflare hosts the application and its database. Brevo sends the sign-in and digest emails. Paddle handles payments and invoices. Google is used only when you choose Google sign-in.",
           "These four are the only sub-processors. We do not sell data and we do not use it for advertising.",
         ],
       },
