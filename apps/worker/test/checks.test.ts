@@ -86,8 +86,8 @@ describe("plan gate", () => {
   });
 
   it("R10: after a downgrade only the oldest links up to the limit are checked", async () => {
-    const starterLimit = 100;
-    const hosts = Array.from({ length: 50 }, (_, index) => `store-${index}.example`);
+    const starterLimit = 250;
+    const hosts = Array.from({ length: 125 }, (_, index) => `store-${index}.example`);
     const olderUrls = hosts.flatMap((host) => {
       return [productUrl({ host, handle: "first" }), productUrl({ host, handle: "second" })];
     });
@@ -96,8 +96,8 @@ describe("plan gate", () => {
     expect((await addLinks({ cookie: account.cookie, urls: newerUrls })).added).toBe(newerUrls.length);
     await updateSubscription({ accountId: account.accountId, plan: "starter", status: "active" });
 
-    // 100 links at 20 a run need 5 runs; the extra runs prove the newer links never become due.
-    for (let run = 0; run < 10; run++) {
+    // 250 links at 20 a run need 13 runs; the extra runs prove the newer links never become due.
+    for (let run = 0; run < 20; run++) {
       await runChecks({ now: FIRST_RUN });
     }
 

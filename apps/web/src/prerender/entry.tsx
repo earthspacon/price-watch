@@ -47,9 +47,9 @@ const PAGES: readonly PageDefinition[] = [
   {
     path: "/pricing",
     file: "pricing.html",
-    title: "Pricing: $19 or $49 a month — PriceDawn",
+    title: "Pricing: $9 or $19 a month — PriceDawn",
     description:
-      "Starter is $19 a month for 100 links, Pro is $49 a month for 1,000. Every plan checks each link daily.",
+      "Starter is $9 a month for 250 links, Pro is $19 a month for 1,000. Every plan checks each link daily.",
     render: () => <PricingPage />,
   },
   {

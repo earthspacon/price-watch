@@ -14,7 +14,7 @@ import {
 } from "./helpers";
 import { signInAccount } from "./session";
 
-const STARTER_LINK_LIMIT = 100;
+const STARTER_LINK_LIMIT = 250;
 const PASTES_PER_MINUTE = 30;
 const MAX_LINES_PER_PASTE = 1000;
 const MAX_PASTE_BYTES = 200 * 1024;

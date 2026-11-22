@@ -3,12 +3,12 @@ import type { Plan, SubscriptionStatus } from "./domain";
 export const PLANS: Record<Plan, { name: string; monthlyCents: number; linkLimit: number }> = {
   starter: {
     name: "Starter",
-    monthlyCents: 1900,
-    linkLimit: 100,
+    monthlyCents: 900,
+    linkLimit: 250,
   },
   pro: {
     name: "Pro",
-    monthlyCents: 4900,
+    monthlyCents: 1900,
     linkLimit: 1000,
   },
 };

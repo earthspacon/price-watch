@@ -38,7 +38,7 @@ Names used below:
 ## 4. Paddle (live account, after the domain review passes)
 
 1. Checkout → Website approval: submit `https://pricedawn.spacesonlabs.com`. The landing, pricing, terms, privacy and refund pages must be live (do steps 8–9 first with sandbox values if the review needs a live site).
-2. Catalog → Products: create **PriceDawn Starter** and **PriceDawn Pro**, each with one monthly price in USD: **Starter $19/mo** and **Pro $49/mo**. Add **no** Paddle trial period and no yearly prices. Copy the two `pri_…` ids into `PADDLE_PRICE_STARTER` and `PADDLE_PRICE_PRO` in `[env.production.vars]`.
+2. Catalog → Products: create **PriceDawn Starter** and **PriceDawn Pro**, each with one monthly price in USD: **Starter $9/mo** and **Pro $19/mo**. Add **no** Paddle trial period and no yearly prices. Copy the two `pri_…` ids into `PADDLE_PRICE_STARTER` and `PADDLE_PRICE_PRO` in `[env.production.vars]`.
 3. Developer tools → Authentication → client-side token: copy it into `PADDLE_CLIENT_TOKEN`.
 4. Developer tools → Authentication → API key with write access to customer portal sessions and subscriptions. Keep it for step 7.
 5. Developer tools → Notifications → New destination:
@@ -85,8 +85,8 @@ These live in `[env.production.vars]` in `apps/worker/wrangler.toml`; change the
 | `DEV_ROUTES`           | Must stay `"0"` in production: turns off `/dev/*`, the dev outbox and the fake-store switch       |
 | `PADDLE_ENV`           | `"production"` for the live account, `"sandbox"` for a dry run                                    |
 | `PADDLE_CLIENT_TOKEN`  | Paddle.js client-side token used by checkout                                                      |
-| `PADDLE_PRICE_STARTER` | Paddle price id for Starter, $19/mo                                                               |
-| `PADDLE_PRICE_PRO`     | Paddle price id for Pro, $49/mo                                                                   |
+| `PADDLE_PRICE_STARTER` | Paddle price id for Starter, $9/mo                                                               |
+| `PADDLE_PRICE_PRO`     | Paddle price id for Pro, $19/mo                                                                   |
 | `OWNER_ALERT_EMAIL`    | Gets at most one mail an hour for bad webhook signatures and failed payments                      |
 
 `DEV_STORE_ORIGIN` exists only for local runs and e2e: it points price checks at a fake store. Never set it in `[env.production]`.

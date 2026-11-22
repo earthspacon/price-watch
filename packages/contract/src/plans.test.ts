@@ -4,24 +4,24 @@ import type { SubscriptionStatus } from "./domain";
 import { formatPrice, isLive, PLANS } from "./plans";
 
 describe("plans", () => {
-  it("R4: Starter is $19 for 100 links and Pro $49 for 1,000", () => {
+  it("R4: Starter is $9 for 250 links and Pro $19 for 1,000", () => {
     expect(PLANS).toEqual({
       starter: {
         name: "Starter",
-        monthlyCents: 1900,
-        linkLimit: 100,
+        monthlyCents: 900,
+        linkLimit: 250,
       },
       pro: {
         name: "Pro",
-        monthlyCents: 4900,
+        monthlyCents: 1900,
         linkLimit: 1000,
       },
     });
   });
 
   it("R4: prices read as whole dollars unless there are cents", () => {
-    expect(formatPrice(PLANS.starter.monthlyCents)).toBe("$19");
-    expect(formatPrice(PLANS.pro.monthlyCents)).toBe("$49");
+    expect(formatPrice(PLANS.starter.monthlyCents)).toBe("$9");
+    expect(formatPrice(PLANS.pro.monthlyCents)).toBe("$19");
     expect(formatPrice(950)).toBe("$9.50");
   });
 

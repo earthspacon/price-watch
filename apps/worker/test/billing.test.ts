@@ -13,7 +13,7 @@ import {
 } from "./paddle";
 import { signInAccount } from "./session";
 
-const STARTER_LINK_LIMIT = 100;
+const STARTER_LINK_LIMIT = 250;
 const PORTAL_URL = "https://customer-portal.paddle.com/cpl_01jtestportal";
 const FIXTURE_CUSTOMER_ID: string = JSON.parse(PADDLE_FIXTURES.activated).data.customer_id;
 

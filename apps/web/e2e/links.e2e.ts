@@ -129,7 +129,7 @@ describe("links page", () => {
     await pasteBox({ page }).waitFor();
     await addLinksByApi({ page, urls: shirtUrls({ host, count: PLANS.starter.linkLimit }) });
     await page.reload();
-    await page.getByText("100 of 100 links. Switch to Pro for 1,000.").waitFor();
+    await page.getByText("250 of 250 links. Switch to Pro for 1,000.").waitFor();
 
     expect(await pasteBox({ page }).isDisabled()).toBe(true);
   });

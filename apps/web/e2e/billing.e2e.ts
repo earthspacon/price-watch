@@ -63,8 +63,8 @@ describe("plan picker", () => {
 
     expect(await starter.isVisible()).toBe(true);
     expect(await pro.isVisible()).toBe(true);
+    expect(await page.getByText("$9").first().isVisible()).toBe(true);
     expect(await page.getByText("$19").first().isVisible()).toBe(true);
-    expect(await page.getByText("$49").first().isVisible()).toBe(true);
     expect(await page.getByRole("textbox", { name: /product links/i }).isDisabled()).toBe(true);
   });
 

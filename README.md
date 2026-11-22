@@ -2,7 +2,7 @@
 
 PriceDawn tracks your competitors' Shopify prices. Paste the product links you watch by hand, and every morning at 7:00 in your time zone you get one email that says which products changed price, from what to what and by how much. Each link is checked once a day through the store's public product data. If a product disappears, a store blocks the check or nothing changed, the email says so — it never invents a price change.
 
-Two plans: Starter, $19 a month for 100 links, and Pro, $49 a month for 1,000. Paid through Paddle. Every plan includes the full price history as a CSV.
+Two plans: Starter, $9 a month for 250 links, and Pro, $19 a month for 1,000. Paid through Paddle. Every plan includes the full price history as a CSV.
 
 ## Layout
 

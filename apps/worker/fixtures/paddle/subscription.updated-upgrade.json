@@ -51,7 +51,7 @@
           "trial_period": null,
           "tax_mode": "account_setting",
           "unit_price": {
-            "amount": "4900",
+            "amount": "1900",
             "currency_code": "USD"
           },
           "quantity": {
