@@ -228,7 +228,7 @@ const LinkTitle = ({ link }: { link: LinkDto }) => {
         href={link.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block break-all font-medium text-brand-ink hover:underline"
+        className="block break-all py-1.5 font-medium text-brand-ink hover:underline"
       >
         {link.title ?? link.url.replace(URL_SCHEME, "")}
       </a>

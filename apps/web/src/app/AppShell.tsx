@@ -86,7 +86,12 @@ const TopBar = () => {
       <div className="flex items-center gap-2 text-xs text-slate-500 sm:gap-3">
         <span className="hidden truncate sm:inline">{me?.email}</span>
         <ThemeToggle />
-        <button type="button" onClick={() => signOutClicked()} aria-label="Sign out" className="hover:text-slate-900">
+        <button
+          type="button"
+          onClick={() => signOutClicked()}
+          aria-label="Sign out"
+          className="inline-flex size-8 items-center justify-center hover:text-slate-900"
+        >
           <LogOut className="size-4" />
         </button>
       </div>
@@ -102,7 +107,7 @@ const NavButton = ({ item }: { item: NavItem }) => {
       to={item.to}
       end
       className={({ isActive }) => {
-        return `flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium ${isActive ? "bg-brand-50 text-brand-ink" : "text-slate-600 hover:bg-slate-50"}`;
+        return `flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium sm:px-3 ${isActive ? "bg-brand-50 text-brand-ink" : "text-slate-600 hover:bg-slate-50"}`;
       }}
     >
       <Icon className="size-4" />
