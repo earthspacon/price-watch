@@ -1,4 +1,5 @@
 import { FAQ_ITEMS } from "./faq";
+import { SessionCta } from "./SessionCta";
 
 export const HERO_TEXT =
   "Wake up to your competitors' price changes: a daily email for Shopify store owners who check rival prices by hand.";
@@ -37,15 +38,13 @@ const Hero = () => {
         One email before your day starts. No dashboards, no spreadsheets, no checking four tabs by hand.
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <a
-          href="/sign-in"
-          className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
-        >
-          Start tracking prices
-        </a>
+        <SessionCta
+          label="Start tracking prices"
+          className="inline-flex min-h-11 items-center rounded-lg bg-brand-600 px-5 text-sm font-medium text-white hover:bg-brand-700"
+        />
         <a
           href="/pricing"
-          className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700"
+          className="inline-flex min-h-11 items-center rounded-lg border border-slate-300 px-5 text-sm font-medium text-slate-700"
         >
           See pricing
         </a>
@@ -68,9 +67,9 @@ const BeforeAfter = () => {
             <ul className="space-y-2 text-sm text-slate-700">
               {MANUAL_TABS.map((tab) => {
                 return (
-                  <li key={tab.host} className="flex flex-wrap justify-between gap-2 border-b border-slate-100 pb-2">
-                    <span>{`${tab.product} at ${tab.host}`}</span>
-                    <span className="font-mono text-slate-500">{tab.price}</span>
+                  <li key={tab.host} className="flex justify-between gap-3 border-b border-slate-100 pb-2">
+                    <span className="min-w-0">{`${tab.product} at ${tab.host}`}</span>
+                    <span className="shrink-0 font-mono text-slate-500">{tab.price}</span>
                   </li>
                 );
               })}
@@ -143,7 +142,7 @@ const ClosingCall = () => {
       <p className="text-slate-600">$4 a month for up to 500 links, each checked once a day. Cancel anytime.</p>
       <a
         href="/pricing"
-        className="inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
+        className="inline-flex min-h-11 items-center rounded-lg bg-brand-600 px-5 text-sm font-medium text-white hover:bg-brand-700"
       >
         See what you get
       </a>

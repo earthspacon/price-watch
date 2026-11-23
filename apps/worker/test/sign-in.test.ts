@@ -1,5 +1,5 @@
 import type { MeDto } from "@price-watch/contract";
-import { env } from "cloudflare:test";
+import { env, SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 
 import { consumeRateLimit } from "../src/repo/shield";
@@ -92,6 +92,13 @@ async function signInWithGoogle({ email }: { email: string }) {
 }
 
 describe("sign-in", () => {
+  it("/login sends people to the sign-in page", async () => {
+    const response = await SELF.fetch(`${BASE}/login`, { redirect: "manual" });
+
+    expect(response.status).toBe(301);
+    expect(new URL(response.headers.get("location") ?? "", BASE).pathname).toBe("/sign-in");
+  });
+
   it("R1: a new email gets a one-use 15-minute link that opens a session", async () => {
     const email = uniqueEmail({ prefix: "new" });
 

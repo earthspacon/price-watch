@@ -183,6 +183,22 @@ describe("prerendered public site", () => {
     }
   });
 
+  it("R30: every public header has a quiet Sign in link next to the main button", () => {
+    for (const pagePath of PUBLIC_PATHS) {
+      const header = readPage(pagePath).match(/<header[\s\S]*?<\/header>/)?.[0] ?? "";
+
+      expect(header, pagePath).toMatch(/<a href="\/sign-in"[^>]*>Sign in<\/a>/);
+      expect(readText(header), pagePath).toContain("Start tracking");
+      expect(header.indexOf(">Sign in<"), pagePath).toBeLessThan(header.indexOf("Start tracking"));
+    }
+  });
+
+  it("R30: the hero button leads to sign-in before the session is known", () => {
+    const hero = readPage("/").match(/<section[\s\S]*?<\/section>/)?.[0] ?? "";
+
+    expect(hero).toMatch(/<a href="\/sign-in"[^>]*>[\s\S]*?Start tracking prices/);
+  });
+
   it("R26: no public page names a tier, a billing toggle or a pack", () => {
     for (const pagePath of PUBLIC_PATHS) {
       const html = readPage(pagePath);

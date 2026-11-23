@@ -69,7 +69,7 @@ const SignInForm = () => {
       {isGoogleEnabled && <GoogleButton />}
       <form onSubmit={submit} className="space-y-3">
         <label className="block text-sm">
-          <span className="font-medium text-slate-700">Work email</span>
+          <span className="font-medium text-slate-700">Email</span>
           <input
             required
             type="email"
@@ -84,6 +84,7 @@ const SignInForm = () => {
           {isSending ? "Sending…" : linkError ? "Send a new link" : "Email me a sign-in link"}
         </button>
       </form>
+      <p className="text-center text-sm text-slate-500">New here? Same button creates your account.</p>
     </Card>
   );
 };
@@ -105,7 +106,7 @@ const GoogleButton = () => {
       </button>
       <div className="flex items-center gap-3 text-xs text-slate-400" aria-hidden="true">
         <span className="h-px flex-1 bg-slate-200" />
-        or with your work email
+        or with an email link
         <span className="h-px flex-1 bg-slate-200" />
       </div>
     </>

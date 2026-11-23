@@ -38,6 +38,8 @@ export const saveTimeZoneFx = createEffect((timeZone: string) => {
 
 export const $me = createStore<MeDto | null>(null);
 export const $sessionStatus = createStore<SessionStatus>("loading");
+// A session without an account still opens the dashboard: the app page tells them what is missing.
+export const $isSignedIn = $sessionStatus.map((status) => status === "ready" || status === "no_account");
 export const $sessionError = restore(
   meFx.failData.map((error) => error.message),
   "",

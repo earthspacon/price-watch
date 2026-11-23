@@ -10,7 +10,7 @@ compatibility_flags = ["nodejs_compat"]
 directory = "../web/dist"
 binding = "ASSETS"
 not_found_handling = "none"
-run_worker_first = ["/api/*", "/dev/*", "/paddle/*", "/app", "/app/*", "/sign-in"]
+run_worker_first = ["/api/*", "/dev/*", "/paddle/*", "/app", "/app/*", "/sign-in", "/login"]
 
 # Per-minute limits (the binding only supports 10 s or 60 s windows). Longer windows live in D1 (rate_limit_hits).
 [[ratelimits]]
@@ -61,7 +61,7 @@ preview_urls = false
 directory = "../web/dist"
 binding = "ASSETS"
 not_found_handling = "none"
-run_worker_first = ["/api/*", "/dev/*", "/paddle/*", "/app", "/app/*", "/sign-in"]
+run_worker_first = ["/api/*", "/dev/*", "/paddle/*", "/app", "/app/*", "/sign-in", "/login"]
 
 [[env.production.ratelimits]]
 name = "AUTH_LIMITER"

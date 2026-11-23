@@ -12,7 +12,7 @@ import {
   uniqueStoreHost,
 } from "./helpers";
 
-const MIN_TARGET_PX = 32;
+const MIN_TARGET_PX = 44;
 const MAX_PUBLIC_HEADER_PX = 64;
 const MAX_HERO_LINES = 4;
 const ROW_TOLERANCE_PX = 4;
@@ -58,6 +58,20 @@ async function smallTargets({ page }: { page: Page }) {
     }
     return small;
   }, MIN_TARGET_PX);
+}
+
+// Where the header and hero buttons sit; the session check must not move them.
+async function ctaBoxes({ page }: { page: Page }) {
+  return page.evaluate(() => {
+    return Array.from(
+      document.querySelectorAll(
+        'header nav a, main section:first-child a[href="/sign-in"], main section:first-child a[href="/app"]',
+      ),
+    ).map((element) => {
+      const box = element.getBoundingClientRect();
+      return [Math.round(box.left), Math.round(box.width)];
+    });
+  });
 }
 
 async function expectTouchTargets({ page }: { page: Page }) {
@@ -125,8 +139,16 @@ describe("layout", () => {
     expect(Math.round(lines)).toBeLessThanOrEqual(MAX_HERO_LINES);
   });
 
-  for (const path of ["/", "/pricing", "/sign-in"]) {
-    it(`touch targets are at least 32 px on ${path} at 390`, async () => {
+  for (const path of [
+    "/",
+    "/pricing",
+    "/prisync-alternative",
+    "/track-shopify-competitor-prices",
+    "/tools/shopify-price-checker",
+    "/terms",
+    "/sign-in",
+  ]) {
+    it(`touch targets are at least 44 px on ${path} at 390`, async () => {
       const { page } = await openSession({ browser, viewport: MOBILE });
 
       await page.goto(path);
@@ -135,7 +157,7 @@ describe("layout", () => {
     });
   }
 
-  it("touch targets are at least 32 px on /app at 390", async () => {
+  it("touch targets are at least 44 px on /app at 390", async () => {
     const { page } = await openAccount({ browser, plan: "paid", viewport: MOBILE });
     const host = uniqueStoreHost();
 
@@ -148,6 +170,43 @@ describe("layout", () => {
 
     await expectTouchTargets({ page });
   });
+
+  it("the app header fits inside 390 with every control on screen", async () => {
+    const { page } = await openAccount({ browser, viewport: MOBILE });
+
+    await page.getByText("Start the plan to begin tracking").waitFor();
+    const overflow = await page.evaluate((width) => {
+      return Array.from(document.querySelectorAll("header a, header button"))
+        .map((element) => {
+          const box = element.getBoundingClientRect();
+          return { label: (element.textContent ?? "").trim() || element.getAttribute("aria-label"), right: box.right };
+        })
+        .filter((box) => box.right > width);
+    }, MOBILE.width);
+
+    expect(overflow).toEqual([]);
+  });
+
+  for (const viewport of [MOBILE, DESKTOP]) {
+    it(`a signed-in visitor gets Open dashboard in the header and hero at ${viewport.width}, with no shift`, async () => {
+      const visitor = await openSession({ browser, viewport });
+      await visitor.page.goto("/");
+      const signedOut = await ctaBoxes({ page: visitor.page });
+      const { page } = await openAccount({ browser, viewport });
+
+      await page.goto("/");
+      const header = page.locator("header");
+      await header.getByRole("link", { name: "Open dashboard" }).waitFor();
+      const signedIn = await ctaBoxes({ page });
+
+      expect(await header.getByRole("link", { name: "Open dashboard" }).getAttribute("href")).toBe("/app");
+      expect(await page.locator("main").getByRole("link", { name: "Open dashboard" }).getAttribute("href")).toBe(
+        "/app",
+      );
+      expect(await header.getByRole("link", { name: "Sign in" }).count()).toBe(0);
+      expect(signedIn).toEqual(signedOut);
+    });
+  }
 
   for (const theme of ["dark", "light"]) {
     it(`the Turnstile widget renders with the ${theme} theme on a ${theme} site`, async () => {

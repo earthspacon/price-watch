@@ -2,11 +2,12 @@ import type { ReactNode } from "react";
 
 import { ThemeToggle } from "../shared/ThemeToggle";
 import { SITE_BRAND, SITE_NAME } from "./config";
+import { SessionCta, SignInLink } from "./SessionCta";
 
 type NavItem = {
   href: string;
   label: string;
-  // Under `sm` the header keeps one row; these items live in the footer there.
+  // Under `sm` the header keeps one row for the logo, Sign in and the main button; these items live in the footer there.
   isSecondary?: boolean;
 };
 
@@ -14,6 +15,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   {
     href: "/pricing",
     label: "Pricing",
+    isSecondary: true,
   },
   {
     href: "/prisync-alternative",
@@ -62,29 +64,28 @@ export const SiteLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col bg-surface text-slate-900">
       <header className="border-b border-slate-200">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:py-4 lg:px-8">
-          <a href="/" className="inline-flex min-h-8 items-center text-lg font-semibold tracking-tight text-brand-ink">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2 sm:gap-4 sm:py-3 lg:px-8">
+          <a href="/" className="inline-flex min-h-11 items-center text-lg font-semibold tracking-tight text-brand-ink">
             {SITE_NAME}
           </a>
-          <nav className="flex items-center gap-4 text-sm text-slate-600">
+          <nav className="flex items-center gap-3 text-sm text-slate-600 sm:gap-4">
             {NAV_ITEMS.map((item) => {
               return (
                 <a
                   key={item.href}
                   href={item.href}
-                  className={`${item.isSecondary ? "hidden sm:inline-flex" : "inline-flex"} min-h-8 items-center hover:text-slate-900`}
+                  className={`${item.isSecondary ? "hidden sm:inline-flex" : "inline-flex"} min-h-11 min-w-11 items-center justify-center hover:text-slate-900`}
                 >
                   {item.label}
                 </a>
               );
             })}
             <ThemeToggle />
-            <a
-              href="/sign-in"
-              className="rounded-lg bg-brand-600 px-3 py-1.5 font-medium text-white hover:bg-brand-700"
-            >
-              Sign in
-            </a>
+            <SignInLink className="inline-flex min-h-11 items-center font-medium text-slate-700 hover:text-slate-900" />
+            <SessionCta
+              label="Start tracking"
+              className="inline-flex min-h-11 items-center rounded-lg bg-brand-600 px-3 font-medium text-white hover:bg-brand-700"
+            />
           </nav>
         </div>
       </header>
@@ -95,7 +96,11 @@ export const SiteLayout = ({ children }: { children: ReactNode }) => {
           <nav className="flex flex-wrap gap-x-4">
             {FOOTER_ITEMS.map((item) => {
               return (
-                <a key={item.href} href={item.href} className="inline-flex min-h-8 items-center hover:text-slate-900">
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-slate-900"
+                >
                   {item.label}
                 </a>
               );

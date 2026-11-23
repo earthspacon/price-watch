@@ -23,6 +23,9 @@ const PADDLE_WEBHOOK_PATH = "/paddle/webhook";
 // SPA routes that must get the empty app shell, not the prerendered landing page in index.html.
 const APP_SHELL_PATH = /^\/(app|app\/.*|sign-in)$/;
 const APP_SHELL_ASSET = "/app-shell";
+// People type /login out of habit; the sign-in page lives at /sign-in.
+const LOGIN_ALIAS_PATH = "/login";
+const SIGN_IN_PATH = "/sign-in";
 // Prerendered 404.html. Assets use not_found_handling = "none", so every unknown path reaches the Worker.
 const NOT_FOUND_ASSET = "/404";
 
@@ -64,6 +67,9 @@ async function routeRequest({ deps, request }: { deps: Deps; request: Request })
   }
   if (pathname.startsWith("/api/")) {
     return routeApiRequest({ deps, request });
+  }
+  if (pathname === LOGIN_ALIAS_PATH && READ_METHODS.has(request.method)) {
+    return Response.redirect(new URL(SIGN_IN_PATH, request.url).toString(), 301);
   }
   if (APP_SHELL_PATH.test(pathname) && READ_METHODS.has(request.method) && deps.env.ASSETS) {
     return deps.env.ASSETS.fetch(new URL(APP_SHELL_ASSET, request.url));
