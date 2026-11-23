@@ -2,13 +2,13 @@ import { AlertTriangle, Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 export const BUTTON_PRIMARY =
-  "inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50";
 export const BUTTON_SECONDARY =
-  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-surface px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-surface px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50";
 export const BUTTON_DANGER =
-  "inline-flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50";
 export const INPUT =
-  "mt-1 w-full rounded-lg border border-slate-300 bg-surface px-3 py-2 text-sm focus:border-brand-500 focus:outline-none";
+  "mt-1 min-h-11 w-full rounded-lg border border-slate-300 bg-surface px-3 py-2 text-sm focus:border-brand-500 focus:outline-none";
 
 const DATE_FORMAT = new Intl.DateTimeFormat("en-US", {
   month: "short",

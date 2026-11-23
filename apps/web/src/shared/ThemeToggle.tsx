@@ -19,7 +19,7 @@ export const ThemeToggle = () => {
       type="button"
       onClick={() => themeToggled()}
       aria-label={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
-      className="inline-flex size-8 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+      className="inline-flex size-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
     >
       <Icon className="size-4" aria-hidden="true" />
     </button>

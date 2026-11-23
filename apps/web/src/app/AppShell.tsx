@@ -61,7 +61,7 @@ export const AppShell = () => {
 
 export const Logo = ({ to }: { to: string }) => {
   return (
-    <Link to={to} className="flex items-center gap-2">
+    <Link to={to} className="flex min-h-11 items-center gap-2">
       <span className="flex size-8 items-center justify-center rounded-lg bg-brand-600 text-white">
         <TrendingDown className="size-4" />
       </span>
@@ -74,7 +74,7 @@ const TopBar = () => {
   const { me } = useUnit({ me: $me });
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-slate-200 bg-surface/90 sm:gap-4 px-4 py-3 backdrop-blur">
+    <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-slate-200 bg-surface/90 sm:gap-4 px-4 py-1.5 backdrop-blur">
       <div className="flex items-center gap-3 sm:gap-6">
         <Logo to="/app" />
         <nav className="flex gap-1">
@@ -90,7 +90,7 @@ const TopBar = () => {
           type="button"
           onClick={() => signOutClicked()}
           aria-label="Sign out"
-          className="inline-flex size-8 items-center justify-center hover:text-slate-900"
+          className="inline-flex size-11 items-center justify-center hover:text-slate-900"
         >
           <LogOut className="size-4" />
         </button>
@@ -107,10 +107,10 @@ const NavButton = ({ item }: { item: NavItem }) => {
       to={item.to}
       end
       className={({ isActive }) => {
-        return `flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium sm:px-3 ${isActive ? "bg-brand-50 text-brand-ink" : "text-slate-600 hover:bg-slate-50"}`;
+        return `flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-medium sm:px-3 ${isActive ? "bg-brand-50 text-brand-ink" : "text-slate-600 hover:bg-slate-50"}`;
       }}
     >
-      <Icon className="size-4" />
+      <Icon className="hidden size-4 sm:block" />
       {item.label}
     </NavLink>
   );

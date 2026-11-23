@@ -4,14 +4,18 @@ import path from "node:path";
 import type { Browser } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { DESKTOP, launchBrowser, MOBILE, openSession } from "./helpers";
+import { DESKTOP, launchBrowser, MOBILE, openAccount, openSession } from "./helpers";
 
-const SHOTS_DIR = path.resolve(import.meta.dirname, "../../../.agents/reports/shots");
+const SHOTS_DIR = process.env.SHOTS_DIR ?? path.resolve(import.meta.dirname, "../../../.agents/reports/shots");
 const PAGES = [
   { name: "home", path: "/" },
   { name: "pricing", path: "/pricing" },
   { name: "prisync-alternative", path: "/prisync-alternative" },
   { name: "track-shopify-competitor-prices", path: "/track-shopify-competitor-prices" },
+  { name: "shopify-price-checker", path: "/tools/shopify-price-checker" },
+  { name: "terms", path: "/terms" },
+  { name: "privacy", path: "/privacy" },
+  { name: "refunds", path: "/refunds" },
   { name: "sign-in", path: "/sign-in" },
 ];
 const VIEWPORTS = [
@@ -47,6 +51,21 @@ describe("screenshots", () => {
         expect(session.consoleErrors, `${page.name} at ${label}`).toEqual([]);
       }
       await session.context.close();
+    }
+  });
+
+  it("the dashboard empty state at 1440 and 390", async () => {
+    for (const { label, size } of VIEWPORTS) {
+      const { page, context } = await openAccount({ browser, viewport: size });
+      await page.getByText("Start the plan to begin tracking").waitFor();
+      await page.waitForTimeout(SETTLE_MS);
+      await page.screenshot({ path: path.join(SHOTS_DIR, `dashboard-empty-${label}.png`), fullPage: true });
+      await context.close();
+      const paid = await openAccount({ browser, plan: "paid", viewport: size });
+      await paid.page.waitForLoadState("networkidle");
+      await paid.page.waitForTimeout(SETTLE_MS);
+      await paid.page.screenshot({ path: path.join(SHOTS_DIR, `dashboard-paid-empty-${label}.png`), fullPage: true });
+      await paid.context.close();
     }
   });
 });

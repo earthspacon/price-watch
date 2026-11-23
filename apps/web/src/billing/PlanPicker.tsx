@@ -37,7 +37,7 @@ export const PlanPicker = () => {
             type="button"
             disabled={!billing?.checkout}
             onClick={() => checkoutClicked()}
-            className={`${BUTTON_PRIMARY} min-h-11 w-full`}
+            className={`${BUTTON_PRIMARY} w-full`}
           >
             Start tracking
           </button>
