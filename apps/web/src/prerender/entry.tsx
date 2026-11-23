@@ -95,7 +95,28 @@ const PAGES: readonly PageDefinition[] = [
   },
 ];
 
-export function buildPrerenderedFiles(template: string): PrerenderedFile[] {
+// Cloudflare Web Analytics: a cookieless page-view counter. Only a production build passes the site token (public, like
+// the Turnstile site key); dev, e2e and sandbox builds pass none and load nothing.
+export type PrerenderOptions = { beaconToken?: string };
+
+const BEACON_SRC = "https://static.cloudflareinsights.com/beacon.min.js";
+
+export function addBeacon({ html, token }: { html: string; token: string }) {
+  const beacon = `<script defer src="${BEACON_SRC}" data-cf-beacon='{"token":"${token}","spa":true}'></script>`;
+  return html.replace("</head>", `  ${beacon}\n  </head>`);
+}
+
+export function buildPrerenderedFiles(template: string, { beaconToken }: PrerenderOptions = {}): PrerenderedFile[] {
+  const files = buildFiles(template);
+  if (!beaconToken) {
+    return files;
+  }
+  return files.map((entry) => {
+    return entry.file.endsWith(".html") ? { ...entry, content: addBeacon({ html: entry.content, token: beaconToken }) } : entry;
+  });
+}
+
+function buildFiles(template: string): PrerenderedFile[] {
   const pages = PAGES.map((page) => {
     return {
       file: page.file,

@@ -1,12 +1,12 @@
 // One header set for every response: the Worker adds it to its own responses, the web build writes it to `_headers`
-// for static assets. Turnstile (sign-in) and Paddle (checkout) are the only third parties.
+// for static assets. Turnstile (sign-in), Paddle (checkout) and Cloudflare Web Analytics (page views) are the only third parties.
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' https://challenges.cloudflare.com https://cdn.paddle.com",
+  "script-src 'self' https://challenges.cloudflare.com https://cdn.paddle.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline' https://cdn.paddle.com",
   "img-src 'self' data: https://*.paddle.com",
   "font-src 'self'",
-  "connect-src 'self' https://*.paddle.com",
+  "connect-src 'self' https://*.paddle.com https://cloudflareinsights.com",
   "frame-src https://challenges.cloudflare.com https://*.paddle.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

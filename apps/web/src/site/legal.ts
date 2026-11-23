@@ -58,6 +58,7 @@ export const LEGAL_DOCUMENTS: Record<LegalSlug, LegalDocument> = {
         paragraphs: [
           "Your email address, the links you paste, the prices we read from those links, and the time zone your browser reports so the digest arrives at 7:00.",
           "We do not ask for a name, a phone number, a card number or any data about your customers. Paddle handles the card details.",
+          "We count page views on this site with Cloudflare Web Analytics, which sets no cookies and collects no personal data.",
         ],
       },
       {

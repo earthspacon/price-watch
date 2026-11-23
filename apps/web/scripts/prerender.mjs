@@ -20,7 +20,7 @@ try {
 
   await mkdir(DIST, { recursive: true });
 
-  for (const { file, content } of buildPrerenderedFiles(template)) {
+  for (const { file, content } of buildPrerenderedFiles(template, { beaconToken: process.env.VITE_CF_BEACON_TOKEN })) {
     await mkdir(path.dirname(path.join(DIST, file)), { recursive: true });
     await writeFile(path.join(DIST, file), content);
   }
