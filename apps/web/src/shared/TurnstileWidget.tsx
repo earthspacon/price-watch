@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { loadTurnstile, TURNSTILE_SITE_KEY } from "../session/turnstile";
 
 // Cloudflare's bot check; the token it returns goes with the request so the server can verify it.
+// The site is dark unless `data-theme="light"` is set, and the widget takes the theme it is rendered in.
 export const TurnstileWidget = ({
   onSolved,
   onExpired,
@@ -24,6 +25,7 @@ export const TurnstileWidget = ({
         widgetId = turnstile.render(container.current, {
           sitekey: TURNSTILE_SITE_KEY,
           size: "flexible",
+          theme: document.documentElement.dataset.theme === "light" ? "light" : "dark",
           callback: onSolved,
           "expired-callback": onExpired,
           "error-callback": onExpired,

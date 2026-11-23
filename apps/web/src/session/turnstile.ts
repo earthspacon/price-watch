@@ -4,6 +4,7 @@ type TurnstileApi = {
     options: {
       sitekey: string;
       size: "flexible";
+      theme: "dark" | "light";
       callback: (token: string) => void;
       "expired-callback": () => void;
       "error-callback": () => void;
