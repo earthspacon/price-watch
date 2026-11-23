@@ -32,7 +32,7 @@ export const LandingPage = () => {
 const Hero = () => {
   return (
     <section className="mx-auto max-w-3xl space-y-6 px-4 pb-12 pt-16 text-center lg:px-8 lg:pt-24">
-      <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{HERO_TEXT}</h1>
+      <h1 className="text-2xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{HERO_TEXT}</h1>
       <p className="text-lg text-slate-600">
         One email before your day starts. No dashboards, no spreadsheets, no checking four tabs by hand.
       </p>
