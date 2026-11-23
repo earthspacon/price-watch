@@ -1,4 +1,4 @@
-import { isLive, PLANS, type AddLinksResult, type LinkDto } from "@price-watch/contract";
+import { isLive, type AddLinksResult, type LinkDto } from "@price-watch/contract";
 import { useGate, useUnit } from "effector-react";
 import { useState } from "react";
 
@@ -53,7 +53,7 @@ export const LinksPage = () => {
           title="Your links"
           subtitle={
             <>
-              <span className="block">{hasPlan ? describeUsage({ me }) : "Pick a plan to start tracking."}</span>
+              <span className="block">{hasPlan ? describeUsage({ me }) : "Start the plan to begin tracking."}</span>
               <span className="block">{describeDigest({ timeZone: me?.timeZone ?? null })}</span>
             </>
           }
@@ -293,9 +293,8 @@ const RemoveActions = ({
 
 function describeUsage({ me }: { me: { linkCount: number; linkLimit: number } }) {
   const usage = `${me.linkCount} of ${me.linkLimit} links.`;
-  const isStarterFull = me.linkLimit === PLANS.starter.linkLimit && me.linkCount >= me.linkLimit;
 
-  return isStarterFull ? `${usage} Switch to Pro for ${PLANS.pro.linkLimit.toLocaleString("en-US")}.` : usage;
+  return me.linkCount >= me.linkLimit ? `${usage} Remove a link to add another.` : usage;
 }
 
 function describeDigest({ timeZone }: { timeZone: string | null }) {

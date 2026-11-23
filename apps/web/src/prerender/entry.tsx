@@ -1,7 +1,8 @@
-import { formatPrice, PLANS, type Plan } from "@price-watch/contract";
+import { PAID_PLAN } from "@price-watch/contract";
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { PLAN_PRICE } from "../pricing/plan";
 import { LandingPage } from "../site/LandingPage";
 import { LegalPage } from "../site/LegalPage";
 import { NotFoundPage } from "../site/NotFoundPage";
@@ -29,8 +30,6 @@ type PageDefinition = {
   jsonLd?: unknown;
 };
 
-const PLAN_ORDER: Plan[] = ["starter", "pro"];
-
 const LANDING_TITLE = "PriceDawn: your competitors' price changes every morning";
 const LANDING_DESCRIPTION =
   "PriceDawn checks your competitors' Shopify product prices every day and emails you what changed each morning.";
@@ -47,9 +46,8 @@ const PAGES: readonly PageDefinition[] = [
   {
     path: "/pricing",
     file: "pricing.html",
-    title: "Pricing: $9 or $19 a month — PriceDawn",
-    description:
-      "Starter is $9 a month for 250 links, Pro is $19 a month for 1,000. Every plan checks each link daily.",
+    title: "Pricing: $4 a month — PriceDawn",
+    description: "One plan: $4 a month for up to 500 Shopify product links, each checked daily. Cancel anytime.",
     render: () => <PricingPage />,
   },
   {
@@ -159,15 +157,12 @@ function buildLandingJsonLd() {
         operatingSystem: "Web",
         url: SITE_URL,
         description: LANDING_DESCRIPTION,
-        offers: PLAN_ORDER.map((plan) => {
-          return {
-            "@type": "Offer",
-            name: PLANS[plan].name,
-            price: String(PLANS[plan].monthlyCents / 100),
-            priceCurrency: "USD",
-            url: `${SITE_URL}/pricing`,
-          };
-        }),
+        offers: {
+          "@type": "Offer",
+          price: String(PAID_PLAN.monthlyCents / 100),
+          priceCurrency: "USD",
+          url: `${SITE_URL}/pricing`,
+        },
       },
       {
         "@type": "FAQPage",
@@ -187,10 +182,6 @@ function buildLandingJsonLd() {
 }
 
 function buildLlms() {
-  const plans = PLAN_ORDER.map((plan) => {
-    const { name, monthlyCents, linkLimit } = PLANS[plan];
-    return `- ${name}: ${formatPrice(monthlyCents)}/mo, ${linkLimit.toLocaleString("en-US")} links`;
-  });
   const pages = PUBLIC_PATHS.map((path) => {
     return `- ${PAGE_LABELS[path]}: ${buildPageUrl(path)}`;
   });
@@ -200,8 +191,8 @@ function buildLlms() {
     "",
     "> PriceDawn checks your competitors' Shopify product prices every day and emails you what changed each morning at 7:00 in your time zone.",
     "",
-    "## Plans",
-    ...plans,
+    "## Price",
+    `- One plan: ${PLAN_PRICE}/month for up to ${PAID_PLAN.linkLimit.toLocaleString("en-US")} links, cancel anytime`,
     "",
     "## Pages",
     ...pages,
@@ -210,7 +201,7 @@ function buildLlms() {
     "- A link is one product variant.",
     "- Shopify stores only.",
     "- A price is shown as the plain number from the store's product data; a link is only compared with itself.",
-    "- Every plan includes the CSV export of the full price history.",
+    "- The plan includes the CSV export of the full price history.",
     "",
   ].join("\n");
 }

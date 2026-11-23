@@ -140,12 +140,12 @@ const ClosingCall = () => {
   return (
     <section className="mx-auto max-w-3xl space-y-4 px-4 py-16 text-center lg:px-8">
       <h2 className="text-2xl font-semibold tracking-tight">Know about the change before your customers do</h2>
-      <p className="text-slate-600">Plans start at $9 a month, and every plan checks each link once a day.</p>
+      <p className="text-slate-600">$4 a month for up to 500 links, each checked once a day. Cancel anytime.</p>
       <a
         href="/pricing"
         className="inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
       >
-        Compare the plans
+        See what you get
       </a>
     </section>
   );

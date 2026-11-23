@@ -32,7 +32,7 @@ describe("email sign-in", () => {
     const email = uniqueEmail({ prefix: "sign-in" });
 
     await signInWithUi({ page, email });
-    await page.getByText("Pick a plan to start tracking").waitFor();
+    await page.getByText("Start the plan to begin tracking").waitFor();
     const me = await apiJson<MeDto>({ page, path: "/api/me" });
     const mails = await readOutbox({ email });
 

@@ -68,7 +68,7 @@ function readTime({ data, key }: { data: Record<string, unknown>; key: string })
 }
 
 function readPlan(value: unknown): Plan | null {
-  return value === "starter" || value === "pro" ? value : null;
+  return value === "paid" ? value : null;
 }
 
 const STATUSES: SubscriptionStatus[] = ["no_subscription", "trialing", "active", "past_due", "paused", "canceled"];

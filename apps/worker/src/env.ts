@@ -6,8 +6,7 @@ export type Env = {
   DEV_ROUTES: string;
   PADDLE_ENV: string;
   PADDLE_CLIENT_TOKEN?: string;
-  PADDLE_PRICE_STARTER?: string;
-  PADDLE_PRICE_PRO?: string;
+  PADDLE_PRICE?: string;
   OWNER_ALERT_EMAIL?: string;
   DEV_STORE_ORIGIN?: string;
   BETTER_AUTH_SECRET: string;

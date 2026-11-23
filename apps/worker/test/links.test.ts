@@ -14,7 +14,7 @@ import {
 } from "./helpers";
 import { signInAccount } from "./session";
 
-const STARTER_LINK_LIMIT = 250;
+const PAID_LINK_LIMIT = 500;
 const PASTES_PER_MINUTE = 30;
 const MAX_LINES_PER_PASTE = 1000;
 const MAX_PASTE_BYTES = 200 * 1024;
@@ -31,7 +31,7 @@ function countAccountLinks({ accountId }: { accountId: string }) {
 
 describe("links", () => {
   it("R9: valid product links are saved as pending", async () => {
-    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "paste" }), plan: "pro", status: "active" });
+    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "paste" }), plan: "paid", status: "active" });
 
     const result = await addLinks({
       cookie,
@@ -52,7 +52,7 @@ describe("links", () => {
   });
 
   it("R9: invalid and duplicate lines are skipped with a reason", async () => {
-    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "skips" }), plan: "pro", status: "active" });
+    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "skips" }), plan: "paid", status: "active" });
     const lines = [
       "https://rival.example/products/linen-shirt",
       "not a link",
@@ -85,7 +85,7 @@ describe("links", () => {
   });
 
   it("R9: the 31st paste in a minute gets 429", async () => {
-    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "burst" }), plan: "pro", status: "active" });
+    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "burst" }), plan: "paid", status: "active" });
     const urls = bulkUrls({ host: "burst.example", count: PASTES_PER_MINUTE + 1 });
 
     const statuses = [];
@@ -100,7 +100,7 @@ describe("links", () => {
   it("R9: more than 1,000 lines get 413", async () => {
     const { accountId, cookie } = await signInAccount({
       email: uniqueEmail({ prefix: "huge" }),
-      plan: "pro",
+      plan: "paid",
       status: "active",
     });
 
@@ -122,46 +122,46 @@ describe("links", () => {
   it("R10: links past the plan limit are skipped as over_limit", async () => {
     const single = await signInAccount({
       email: uniqueEmail({ prefix: "limit" }),
-      plan: "starter",
+      plan: "paid",
       status: "active",
     });
-    const urls = bulkUrls({ host: "limit.example", count: STARTER_LINK_LIMIT + 2 });
+    const urls = bulkUrls({ host: "limit.example", count: PAID_LINK_LIMIT + 2 });
 
     const result = await addLinks({ cookie: single.cookie, urls });
 
-    expect(result.added).toBe(STARTER_LINK_LIMIT);
+    expect(result.added).toBe(PAID_LINK_LIMIT);
     expect(result.skipped).toEqual([
-      { line: STARTER_LINK_LIMIT + 1, text: urls[STARTER_LINK_LIMIT], reason: "over_limit" },
-      { line: STARTER_LINK_LIMIT + 2, text: urls[STARTER_LINK_LIMIT + 1], reason: "over_limit" },
+      { line: PAID_LINK_LIMIT + 1, text: urls[PAID_LINK_LIMIT], reason: "over_limit" },
+      { line: PAID_LINK_LIMIT + 2, text: urls[PAID_LINK_LIMIT + 1], reason: "over_limit" },
     ]);
-    expect(await countAccountLinks({ accountId: single.accountId })).toBe(STARTER_LINK_LIMIT);
+    expect(await countAccountLinks({ accountId: single.accountId })).toBe(PAID_LINK_LIMIT);
 
     const twoTabs = await signInAccount({
       email: uniqueEmail({ prefix: "two-tabs" }),
-      plan: "starter",
+      plan: "paid",
       status: "active",
     });
-    const tabPaste = STARTER_LINK_LIMIT * 0.6;
+    const tabPaste = PAID_LINK_LIMIT * 0.6;
     const results: AddLinksResult[] = await Promise.all([
       addLinks({ cookie: twoTabs.cookie, urls: bulkUrls({ host: "tab-one.example", count: tabPaste }) }),
       addLinks({ cookie: twoTabs.cookie, urls: bulkUrls({ host: "tab-two.example", count: tabPaste }) }),
     ]);
 
-    expect(results[0].added + results[1].added).toBe(STARTER_LINK_LIMIT);
+    expect(results[0].added + results[1].added).toBe(PAID_LINK_LIMIT);
     expect([...results[0].skipped, ...results[1].skipped].every((skipped) => skipped.reason === "over_limit")).toBe(
       true,
     );
-    expect(await countAccountLinks({ accountId: twoTabs.accountId })).toBe(STARTER_LINK_LIMIT);
+    expect(await countAccountLinks({ accountId: twoTabs.accountId })).toBe(PAID_LINK_LIMIT);
   });
 
   it("R11: removing a link deletes it and its price history", async () => {
     const { accountId, cookie } = await signInAccount({
       email: uniqueEmail({ prefix: "remove" }),
-      plan: "starter",
+      plan: "paid",
       status: "active",
     });
-    const urls = bulkUrls({ host: "full.example", count: STARTER_LINK_LIMIT });
-    expect((await addLinks({ cookie, urls })).added).toBe(STARTER_LINK_LIMIT);
+    const urls = bulkUrls({ host: "full.example", count: PAID_LINK_LIMIT });
+    expect((await addLinks({ cookie, urls })).added).toBe(PAID_LINK_LIMIT);
     const linkId = await findLinkId({ accountId, host: "full.example", handle: "item-0" });
     await recordCheckedPrices({
       linkId,
@@ -182,7 +182,7 @@ describe("links", () => {
       0,
     );
     const me = await apiFetch({ cookie, path: "/api/me" });
-    expect(await me.json<MeDto>()).toMatchObject({ linkCount: STARTER_LINK_LIMIT - 1 });
+    expect(await me.json<MeDto>()).toMatchObject({ linkCount: PAID_LINK_LIMIT - 1 });
     expect(await addLinks({ cookie, urls: [productUrl({ host: "full.example", handle: "one-more" })] })).toEqual({
       added: 1,
       skipped: [],
@@ -192,7 +192,7 @@ describe("links", () => {
   it("R12: the list returns prices and the last change, latest change first", async () => {
     const { accountId, cookie } = await signInAccount({
       email: uniqueEmail({ prefix: "list" }),
-      plan: "pro",
+      plan: "paid",
       status: "active",
     });
     await addLinks({

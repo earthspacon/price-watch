@@ -207,7 +207,7 @@ const DailyEmailCall = () => {
         that moved. Quiet days send nothing.
       </p>
       <a href="/pricing" className={BUTTON_PRIMARY}>
-        See the plans
+        See the price
       </a>
     </section>
   );

@@ -6,7 +6,7 @@ const SOURCE_LINKS = [
 const COMPARISON_ROWS = [
   {
     vendor: "PriceDawn",
-    plans: "Starter $9/mo, 250 links. Pro $19/mo, 1,000 links.",
+    plans: "One plan: $4/mo for up to 500 links.",
     email: "A daily digest at 7:00 in your time zone.",
   },
   {

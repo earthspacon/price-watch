@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-import { EXPORT_CSV_COLUMNS, PLANS, type MeDto } from "@price-watch/contract";
+import { EXPORT_CSV_COLUMNS, PAID_PLAN, type MeDto } from "@price-watch/contract";
 import type { Browser, Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -61,7 +61,7 @@ describe("links page", () => {
   });
 
   it("R9: pasted links appear as checking", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const host = uniqueStoreHost();
 
     await pasteLinks({ page, urls: shirtUrls({ host, count: 3 }) });
@@ -73,7 +73,7 @@ describe("links page", () => {
   });
 
   it("R9: skipped lines are listed with their reason", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const host = uniqueStoreHost();
     const url = productUrl({ host, handle: "linen-shirt" });
 
@@ -86,7 +86,7 @@ describe("links page", () => {
   });
 
   it("R9: the add button is disabled while the box is empty", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
 
     await pasteBox({ page }).waitFor();
     const isDisabledWhenEmpty = await addButton({ page }).isDisabled();
@@ -97,7 +97,7 @@ describe("links page", () => {
   });
 
   it("R9: the add button is disabled while links are saved", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const host = uniqueStoreHost();
     const request = await holdRequests({ page, url: LINKS_REQUEST, method: "POST" });
 
@@ -112,7 +112,7 @@ describe("links page", () => {
   });
 
   it("R9: a failed save keeps the pasted text and shows an error", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const urls = shirtUrls({ host: uniqueStoreHost(), count: 2 });
     await failRequests({ page, url: LINKS_REQUEST, method: "POST" });
 
@@ -122,20 +122,20 @@ describe("links page", () => {
     expect(await pasteBox({ page }).inputValue()).toBe(urls.join("\n"));
   });
 
-  it("R10: at the limit the paste box is disabled with the switch hint", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+  it("R10: at the limit the paste box is disabled with the remove hint", async () => {
+    const { page } = await openAccount({ browser, plan: "paid" });
     const host = uniqueStoreHost();
 
     await pasteBox({ page }).waitFor();
-    await addLinksByApi({ page, urls: shirtUrls({ host, count: PLANS.starter.linkLimit }) });
+    await addLinksByApi({ page, urls: shirtUrls({ host, count: PAID_PLAN.linkLimit }) });
     await page.reload();
-    await page.getByText("250 of 250 links. Switch to Pro for 1,000.").waitFor();
+    await page.getByText("500 of 500 links. Remove a link to add another.").waitFor();
 
     expect(await pasteBox({ page }).isDisabled()).toBe(true);
   });
 
   it("R11: a removed link leaves the list", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const host = uniqueStoreHost();
     const [kept, removed] = shirtUrls({ host, count: 2 });
 
@@ -153,7 +153,7 @@ describe("links page", () => {
   });
 
   it("R12: the list shows a loader until links arrive", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const request = await holdRequests({ page, url: LINKS_REQUEST, method: "GET" });
 
     await page.reload();
@@ -165,7 +165,7 @@ describe("links page", () => {
   });
 
   it("R12: an account with no links sees the empty state", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
 
     await page.getByText(EMPTY_STATE).waitFor();
 
@@ -173,7 +173,7 @@ describe("links page", () => {
   });
 
   it("R12: a failed load shows the error with try again", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     await failRequests({ page, url: LINKS_REQUEST, method: "GET" });
 
     await page.reload();
@@ -187,7 +187,7 @@ describe("links page", () => {
   });
 
   it("R12: a changed link shows old and new price", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const host = uniqueStoreHost();
     const now = Date.now();
 
@@ -213,7 +213,7 @@ describe("links page", () => {
   });
 
   it("R12: on a phone each link is a card without horizontal scroll", async () => {
-    const { page } = await openAccount({ browser, plan: "starter", viewport: MOBILE });
+    const { page } = await openAccount({ browser, plan: "paid", viewport: MOBILE });
     const host = uniqueStoreHost();
 
     await pasteBox({ page }).waitFor();
@@ -232,7 +232,7 @@ describe("links page", () => {
 
   it("R23: the header names the digest time and zone", async () => {
     const timeZone = "Asia/Tashkent";
-    const { page } = await openAccount({ browser, plan: "starter", timezoneId: timeZone });
+    const { page } = await openAccount({ browser, plan: "paid", timezoneId: timeZone });
 
     await page.getByText(`Daily email at 7:00 (${timeZone})`).waitFor();
     const me = await apiJson<MeDto>({ page, path: "/api/me" });
@@ -241,7 +241,7 @@ describe("links page", () => {
   });
 
   it("R24: export downloads a csv", async () => {
-    const { page } = await openAccount({ browser, plan: "starter" });
+    const { page } = await openAccount({ browser, plan: "paid" });
     const host = uniqueStoreHost();
 
     await pasteBox({ page }).waitFor();

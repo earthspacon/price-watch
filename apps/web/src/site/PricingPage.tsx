@@ -4,10 +4,10 @@ export const PricingPage = () => {
   return (
     <div className="mx-auto max-w-4xl space-y-10 px-4 py-14 lg:px-8">
       <div className="space-y-3 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Simple pricing for a daily price check</h1>
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">One plan, $4 a month</h1>
         <p className="text-slate-600">
-          Every plan checks each link once a day and sends one email at 7:00 in your time zone. A link is one product
-          variant, so a shirt in three sizes counts as three links.
+          It checks each link once a day and sends one email at 7:00 in your time zone. A link is one product variant,
+          so a shirt in three sizes counts as three links.
         </p>
       </div>
       <PricingSection />
@@ -15,8 +15,8 @@ export const PricingPage = () => {
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Paid through Paddle</h2>
           <p>
-            Checkout, invoices, cards and sales tax run through Paddle, the merchant of record. You can switch plans or
-            cancel from the billing page at any time.
+            Checkout, invoices, cards and sales tax run through Paddle, the merchant of record. You can cancel from the
+            billing page at any time.
           </p>
         </div>
         <div className="space-y-2">

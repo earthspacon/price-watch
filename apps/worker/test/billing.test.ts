@@ -13,7 +13,7 @@ import {
 } from "./paddle";
 import { signInAccount } from "./session";
 
-const STARTER_LINK_LIMIT = 250;
+const PAID_LINK_LIMIT = 500;
 const PORTAL_URL = "https://customer-portal.paddle.com/cpl_01jtestportal";
 const FIXTURE_CUSTOMER_ID: string = JSON.parse(PADDLE_FIXTURES.activated).data.customer_id;
 
@@ -23,7 +23,7 @@ async function readMe({ cookie }: { cookie: string }) {
   return response.json<MeDto>();
 }
 
-async function signInActiveStarter({ prefix }: { prefix: string }) {
+async function signInActivePaid({ prefix }: { prefix: string }) {
   const account = await signInAccount({ email: uniqueEmail({ prefix }) });
   const activated = await sendFixture({ fixture: "activated", accountId: account.accountId });
   expect(activated.status, "subscription.activated webhook").toBe(200);
@@ -53,16 +53,16 @@ describe("billing", () => {
     });
   });
 
-  it("R6: a signed activation turns tracking on with the Starter limit", async () => {
+  it("R6: a signed activation turns tracking on with the paid plan limit", async () => {
     const { accountId, cookie } = await signInAccount({ email: uniqueEmail({ prefix: "activate" }) });
 
     const response = await sendFixture({ fixture: "activated", accountId });
 
     expect(response.status).toBe(200);
     expect(await readMe({ cookie })).toMatchObject({
-      plan: "starter",
+      plan: "paid",
       subscription: "active",
-      linkLimit: STARTER_LINK_LIMIT,
+      linkLimit: PAID_LINK_LIMIT,
     });
   });
 
@@ -120,7 +120,7 @@ describe("billing", () => {
   });
 
   it("R6: a failed payment alerts the owner", async () => {
-    const { accountId } = await signInActiveStarter({ prefix: "card-declined" });
+    const { accountId } = await signInActivePaid({ prefix: "card-declined" });
     const ownerMailsBefore = await countOwnerMails();
 
     const response = await sendFixture({ fixture: "paymentFailed", accountId });
@@ -133,7 +133,7 @@ describe("billing", () => {
     const noPlan = await signInAccount({ email: uniqueEmail({ prefix: "no-plan" }) });
     const canceled = await signInAccount({
       email: uniqueEmail({ prefix: "canceled" }),
-      plan: "starter",
+      plan: "paid",
       status: "canceled",
     });
 
@@ -151,36 +151,26 @@ describe("billing", () => {
     }
   });
 
-  it("R8: switching to Pro sends a prorated update with the Pro price", async () => {
-    const { accountId, cookie } = await signInActiveStarter({ prefix: "upgrade" });
-    const paddle = fakePaddleApi({
-      reply: () => {
-        return Response.json({ data: { id: `sub_${accountId}`, status: "active" } });
-      },
-    });
+  it("R6: an activation on any other price, like the old $9 one, turns nothing on", async () => {
+    const { accountId, cookie } = await signInAccount({ email: uniqueEmail({ prefix: "old-price" }) });
+    const body = buildPaddleEvent({ fixture: "activated", accountId }).replaceAll(env.PADDLE_PRICE, "pri_old_starter");
 
-    try {
-      const response = await apiFetch({ cookie, path: "/api/billing/switch", method: "POST", body: { plan: "pro" } });
+    const response = await postPaddleEvent({ body });
 
-      expect(response.status).toBe(204);
-      expect(paddle.calls).toEqual([
-        {
-          method: "PATCH",
-          url: `${PADDLE_SANDBOX_API}/subscriptions/sub_${accountId}`,
-          authorization: `Bearer ${env.PADDLE_API_KEY}`,
-          body: expect.objectContaining({
-            items: [{ price_id: env.PADDLE_PRICE_PRO, quantity: 1 }],
-            proration_billing_mode: expect.stringMatching(/^prorated_/),
-          }),
-        },
-      ]);
-    } finally {
-      paddle.restore();
-    }
+    expect(response.status).toBe(200);
+    expect(await readMe({ cookie })).toMatchObject({ plan: null, subscription: "no_subscription", linkLimit: 0 });
+  });
+
+  it("R8: there is no plan to switch to", async () => {
+    const { cookie } = await signInActivePaid({ prefix: "no-switch" });
+
+    const response = await apiFetch({ cookie, path: "/api/billing/switch", method: "POST", body: { plan: "paid" } });
+
+    expect(response.status).toBe(404);
   });
 
   it("R8: manage billing returns a Paddle portal link", async () => {
-    const { cookie } = await signInActiveStarter({ prefix: "portal" });
+    const { cookie } = await signInActivePaid({ prefix: "portal" });
     const paddle = fakePaddleApi({
       reply: () => {
         return Response.json({ data: { urls: { general: { overview: PORTAL_URL } } } });

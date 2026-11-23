@@ -1,4 +1,4 @@
-import { isLive, PLANS, type Plan, type SubscriptionStatus } from "@price-watch/contract";
+import { isLive, PAID_PLAN, type Plan, type SubscriptionStatus } from "@price-watch/contract";
 
 import type { DigestChange, DigestFailure } from "../digest/build";
 import { newId } from "../ids";
@@ -207,7 +207,7 @@ export type AccountContext = {
 
 // Zero without a live plan: nothing is tracked then, and every stored link reads as paused.
 export function getLinkLimit({ account }: { account: AccountContext }) {
-  return account.plan && isLive(account.subscription) ? PLANS[account.plan].linkLimit : 0;
+  return account.plan && isLive(account.subscription) ? PAID_PLAN.linkLimit : 0;
 }
 
 export async function setAccountTimeZone({

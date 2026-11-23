@@ -36,11 +36,11 @@
         "next_billed_at": null,
         "trial_dates": null,
         "price": {
-          "id": "pri_starter_test",
+          "id": "pri_paid_test",
           "product_id": "pro_01jexampleproduct00000000",
-          "description": "Starter monthly",
+          "description": "PriceDawn monthly",
           "type": "standard",
-          "name": "Starter monthly",
+          "name": "PriceDawn monthly",
           "billing_cycle": {
             "interval": "month",
             "frequency": 1

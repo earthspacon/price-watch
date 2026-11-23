@@ -1,17 +1,14 @@
 import type { Plan, SubscriptionStatus } from "./domain";
 
-export const PLANS: Record<Plan, { name: string; monthlyCents: number; linkLimit: number }> = {
-  starter: {
-    name: "Starter",
-    monthlyCents: 900,
-    linkLimit: 250,
-  },
-  pro: {
-    name: "Pro",
-    monthlyCents: 1900,
-    linkLimit: 1000,
+// One paid plan. Kept as a record keyed by plan so stored rows and webhooks have a name to point at.
+export const PLANS: Record<Plan, { monthlyCents: number; linkLimit: number }> = {
+  paid: {
+    monthlyCents: 400,
+    linkLimit: 500,
   },
 };
+
+export const PAID_PLAN = PLANS.paid;
 
 export const LIVE_STATUSES: readonly SubscriptionStatus[] = ["trialing", "active", "past_due"];
 
@@ -23,7 +20,7 @@ function formatUsd(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-// "$19" for whole dollars, "$19.50" otherwise.
+// "$4" for whole dollars, "$4.50" otherwise.
 export function formatPrice(cents: number) {
   return cents % 100 === 0 ? `$${cents / 100}` : formatUsd(cents);
 }

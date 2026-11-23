@@ -24,7 +24,7 @@ export const linkRoutes: Route<ApiContext>[] = [
   route("POST", "/api/links", async ({ deps, account, request }) => {
     const limit = getLinkLimit({ account });
     if (limit === 0) {
-      throw new HttpError(403, "no_plan", "Pick a plan to start tracking links");
+      throw new HttpError(403, "no_plan", "Start the plan to begin tracking links");
     }
     if (!(await deps.env.LINKS_LIMITER.limit({ key: account.accountId })).success) {
       throw new HttpError(429, "rate_limited", "Too many pastes. Wait a minute and try again");

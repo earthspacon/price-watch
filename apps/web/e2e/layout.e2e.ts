@@ -136,7 +136,7 @@ describe("layout", () => {
   }
 
   it("touch targets are at least 32 px on /app at 390", async () => {
-    const { page } = await openAccount({ browser, plan: "starter", viewport: MOBILE });
+    const { page } = await openAccount({ browser, plan: "paid", viewport: MOBILE });
     const host = uniqueStoreHost();
 
     await addLinksByApi({ page, urls: [productUrl({ host, handle: "linen-shirt-1" })] });

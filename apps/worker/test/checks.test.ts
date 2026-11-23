@@ -38,7 +38,7 @@ const LINKS_PER_RUN = 20;
 const LINKS_PER_HOST_PER_RUN = 3;
 
 async function startTracking({ prefix, urls }: { prefix: string; urls: string[] }) {
-  const account = await signInAccount({ email: uniqueEmail({ prefix }), plan: "pro", status: "active" });
+  const account = await signInAccount({ email: uniqueEmail({ prefix }), plan: "paid", status: "active" });
   const result = await addLinks({ cookie: account.cookie, urls });
   expect(result.added, "links saved").toBe(urls.length);
   return account;
@@ -76,7 +76,7 @@ describe("plan gate", () => {
       prefix: "canceled",
       urls: [productUrl({ host: otherHost, handle: SHIRT })],
     });
-    await updateSubscription({ accountId: canceled.accountId, plan: "pro", status: "canceled" });
+    await updateSubscription({ accountId: canceled.accountId, plan: "paid", status: "canceled" });
 
     await runChecks({ now: FIRST_RUN });
 
@@ -85,32 +85,38 @@ describe("plan gate", () => {
     expect(await readOnlyLink({ cookie: canceled.cookie })).toMatchObject({ status: "pending", lastCheckedAt: null });
   });
 
-  it("R10: after a downgrade only the oldest links up to the limit are checked", async () => {
-    const starterLimit = 250;
-    const hosts = Array.from({ length: 125 }, (_, index) => `store-${index}.example`);
+  it("R10: links past the limit (left from an older, larger plan) are never checked", async () => {
+    const limit = 500;
+    const hosts = Array.from({ length: 250 }, (_, index) => `store-${index}.example`);
     const olderUrls = hosts.flatMap((host) => {
       return [productUrl({ host, handle: "first" }), productUrl({ host, handle: "second" })];
     });
-    const newerUrls = hosts.map((host) => productUrl({ host, handle: "third" }));
-    const account = await startTracking({ prefix: "downgrade", urls: olderUrls });
-    expect((await addLinks({ cookie: account.cookie, urls: newerUrls })).added).toBe(newerUrls.length);
-    await updateSubscription({ accountId: account.accountId, plan: "starter", status: "active" });
+    const account = await startTracking({ prefix: "over-limit", urls: olderUrls });
+    // A paste can't go past the limit, so the newer links are written straight to the table.
+    await db
+      .prepare(
+        `INSERT INTO links (id, account_id, url, store_host, handle, status, next_check_at, created_at)
+         SELECT id || '-third', account_id, replace(url, '/first', '/third'), store_host, 'third', 'pending', next_check_at, '2099-01-01T00:00:00.000Z'
+         FROM links WHERE account_id = ? AND handle = 'first'`,
+      )
+      .bind(account.accountId)
+      .run();
 
-    // 250 links at 20 a run need 13 runs; the extra runs prove the newer links never become due.
-    for (let run = 0; run < 20; run++) {
+    // 500 links at 20 a run need 25 runs; the extra runs prove the newer links never become due.
+    for (let run = 0; run < 32; run++) {
       await runChecks({ now: FIRST_RUN });
     }
 
     const fetched = new Set(storeRequests.map((request) => request.url));
-    expect(fetched.size).toBe(starterLimit);
+    expect(fetched.size).toBe(limit);
     for (const host of hosts) {
       expect(fetched.has(productJsonUrl({ host, handle: "first" }))).toBe(true);
       expect(fetched.has(productJsonUrl({ host, handle: "second" }))).toBe(true);
       expect(fetched.has(productJsonUrl({ host, handle: "third" }))).toBe(false);
     }
     const links = await readLinks({ cookie: account.cookie });
-    const newer = links.filter((link) => newerUrls.includes(link.url));
-    expect(newer).toHaveLength(newerUrls.length);
+    const newer = links.filter((link) => link.url.includes("/third"));
+    expect(newer).toHaveLength(hosts.length);
     for (const link of newer) {
       expect(link).toMatchObject({ status: "paused", lastCheckedAt: null });
     }

@@ -19,7 +19,7 @@ Names used below:
 
 1. Add the custom domain `pricedawn.spacesonlabs.com` on the existing `spacesonlabs.com` zone (the zone is already Active in Cloudflare; the `routes` entry in `wrangler.toml` creates it on deploy).
 2. Log in the CLI: `pnpm exec wrangler login`.
-3. The Worker fits the Free plan at launch. Free allows 100,000 requests a day and 5 cron triggers per account. The every-minute check cron is the limit that matters: with up to 20 checks a minute (the :00 tick runs the hourly jobs instead) it can do about 28,300 checks a day. Buy **Workers Paid** ($5/mo) before that becomes tight — a few hundred active Starter accounts, or one Pro account tracking a thousand links — and whenever the Workers dashboard shows `Exceeded CPU` for the check cron. Paid also removes the 10 ms CPU ceiling per request.
+3. The Worker fits the Free plan at launch. Free allows 100,000 requests a day and 5 cron triggers per account. The every-minute check cron is the limit that matters: with up to 20 checks a minute (the :00 tick runs the hourly jobs instead) it can do about 28,300 checks a day. Buy **Workers Paid** ($5/mo) before that becomes tight — a few hundred active accounts — and whenever the Workers dashboard shows `Exceeded CPU` for the check cron. Paid also removes the 10 ms CPU ceiling per request.
 4. Cron triggers are account-wide, 5 on Free. PriceDawn uses one every-minute trigger: the checks run on every tick except :00, the digests and the rate-limit purge on the :00 tick. InboxSieve and MonthMemo use one each, so the studio uses 3 of 5.
 
 ## 2. D1
@@ -38,7 +38,7 @@ Names used below:
 ## 4. Paddle (live account, after the domain review passes)
 
 1. Checkout → Website approval: submit `https://pricedawn.spacesonlabs.com`. The landing, pricing, terms, privacy and refund pages must be live (do steps 8–9 first with sandbox values if the review needs a live site).
-2. Catalog → Products: create **PriceDawn Starter** and **PriceDawn Pro**, each with one monthly price in USD: **Starter $9/mo** and **Pro $19/mo**. Add **no** Paddle trial period and no yearly prices. Copy the two `pri_…` ids into `PADDLE_PRICE_STARTER` and `PADDLE_PRICE_PRO` in `[env.production.vars]`.
+2. Catalog → Products: create **PriceDawn** with one monthly price in USD: **$4/mo**. Add **no** Paddle trial period and no yearly prices. Copy the `pri_…` id into `PADDLE_PRICE` in `[env.production.vars]`.
 3. Developer tools → Authentication → client-side token: copy it into `PADDLE_CLIENT_TOKEN`.
 4. Developer tools → Authentication → API key with write access to customer portal sessions and subscriptions. Keep it for step 7.
 5. Developer tools → Notifications → New destination:
@@ -78,16 +78,15 @@ Someone who signed in by email link and later uses Google with the same address 
 
 These live in `[env.production.vars]` in `apps/worker/wrangler.toml`; change them there and deploy, not in the dashboard.
 
-| Variable               | Purpose                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------- |
-| `APP_URL`              | Public base URL. Used in sign-in links, the digest footer and the auth origin check               |
-| `MAIL_FROM`            | Sender of sign-in links, digests and owner alerts (`PriceDawn <pricedawn@mail.spacesonlabs.com>`) |
-| `DEV_ROUTES`           | Must stay `"0"` in production: turns off `/dev/*`, the dev outbox and the fake-store switch       |
-| `PADDLE_ENV`           | `"production"` for the live account, `"sandbox"` for a dry run                                    |
-| `PADDLE_CLIENT_TOKEN`  | Paddle.js client-side token used by checkout                                                      |
-| `PADDLE_PRICE_STARTER` | Paddle price id for Starter, $9/mo                                                               |
-| `PADDLE_PRICE_PRO`     | Paddle price id for Pro, $19/mo                                                                   |
-| `OWNER_ALERT_EMAIL`    | Gets at most one mail an hour for bad webhook signatures and failed payments                      |
+| Variable              | Purpose                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| `APP_URL`             | Public base URL. Used in sign-in links, the digest footer and the auth origin check               |
+| `MAIL_FROM`           | Sender of sign-in links, digests and owner alerts (`PriceDawn <pricedawn@mail.spacesonlabs.com>`) |
+| `DEV_ROUTES`          | Must stay `"0"` in production: turns off `/dev/*`, the dev outbox and the fake-store switch       |
+| `PADDLE_ENV`          | `"production"` for the live account, `"sandbox"` for a dry run                                    |
+| `PADDLE_CLIENT_TOKEN` | Paddle.js client-side token used by checkout                                                      |
+| `PADDLE_PRICE`        | Paddle price id of the one plan, $4/mo. Empty keeps checkout off ("not available yet")            |
+| `OWNER_ALERT_EMAIL`   | Gets at most one mail an hour for bad webhook signatures and failed payments                      |
 
 `DEV_STORE_ORIGIN` exists only for local runs and e2e: it points price checks at a fake store. Never set it in `[env.production]`.
 
@@ -138,7 +137,7 @@ The custom-domain route in `wrangler.toml` attaches `pricedawn.spacesonlabs.com`
 1. Open `https://pricedawn.spacesonlabs.com`, then `/pricing`, `/prisync-alternative`, `/track-shopify-competitor-prices`, `/terms`, `/privacy`, `/refunds`, `/llms.txt`, `/robots.txt`, `/sitemap.xml`. `curl -sI https://pricedawn.spacesonlabs.com` shows `content-security-policy` and `strict-transport-security`. `curl -sI https://pricedawn.spacesonlabs.com/foo` answers `404` with `x-robots-tag: noindex`. Submit the sitemap in Google Search Console.
 2. Sign in with your own email: the Turnstile box turns green and the magic link arrives from `pricedawn@mail.spacesonlabs.com`. If step 6 is done, sign out and use **Continue with Google** with the same address: you land in the same account.
 3. `curl -i https://pricedawn.spacesonlabs.com/dev/outbox` must answer `404` (dev routes are off). Do not paste that URL into the browser before this check.
-4. Pick Starter with a real card (refund it afterwards in Paddle). Billing should show Active within seconds; Paddle → Notifications → the destination's log should show `200` responses.
+4. Start the plan with a real card (refund it afterwards in Paddle). Billing should show Active within seconds; Paddle → Notifications → the destination's log should show `200` responses.
 5. Paste three product links from one real Shopify store. Each appears right away and shows 'Checking…'; within a minute the every-minute cron checks it and the price, title and variant appear with status `ok`. A copy of the product URL with no `/products/` path is rejected as not a product link.
 6. Open the CSV export: it downloads `pricedawn-history.csv` with one row per stored price.
 7. Billing → Manage billing opens the Paddle portal. Cancel the subscription and switch back, refunding as needed.

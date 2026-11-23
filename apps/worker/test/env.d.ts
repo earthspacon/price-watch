@@ -7,8 +7,7 @@ declare namespace Cloudflare {
     BETTER_AUTH_SECRET: string;
     PADDLE_ENV: string;
     PADDLE_CLIENT_TOKEN: string;
-    PADDLE_PRICE_STARTER: string;
-    PADDLE_PRICE_PRO: string;
+    PADDLE_PRICE: string;
     PADDLE_API_KEY: string;
     PADDLE_WEBHOOK_SECRET: string;
     TURNSTILE_SECRET_KEY: string;

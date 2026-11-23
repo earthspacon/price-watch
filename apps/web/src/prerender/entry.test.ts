@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { PLANS, type Plan } from "@price-watch/contract";
+import { PAID_PLAN } from "@price-watch/contract";
 import { describe, expect, it } from "vitest";
 
 import TEMPLATE from "../../index.html?raw";
@@ -22,7 +22,10 @@ const PUBLIC_PATHS = [
 const LEGAL_PATHS = ["/terms", "/privacy", "/refunds"];
 const PRICE_CHECKER_PATH = "/tools/shopify-price-checker";
 const FOOTER_PATHS = ["/pricing", PRICE_CHECKER_PATH, ...LEGAL_PATHS];
-const PLAN_ORDER: Plan[] = ["starter", "pro"];
+const PLAN_PRICE = "$4";
+const PLAN_LINKS = "500 links";
+// Tier names, a billing-period toggle or "pack" wording would mean more than one plan is on sale again.
+const TIER_WORDS = /\b(Starter|Pro|Solo|Agency|Growth|yearly|annual|annually|pack)\b/i;
 const HERO_TEXT =
   "Wake up to your competitors' price changes: a daily email for Shopify store owners who check rival prices by hand.";
 const EXAMPLE_DIGEST_LINE = "Linen Shirt — Blue / M: 24.99 → 19.99 (-5.00, -20.0%)";
@@ -62,14 +65,12 @@ describe("prerendered public site", () => {
     expect(text).toContain(EXAMPLE_DIGEST_LINE);
     expect(text).toContain("How it works");
     expect(app?.offers).toEqual(
-      PLAN_ORDER.map((plan) => {
-        return expect.objectContaining({
-          name: PLANS[plan].name,
-          price: String(PLANS[plan].monthlyCents / 100),
-          priceCurrency: "USD",
-        });
+      expect.objectContaining({
+        price: String(PAID_PLAN.monthlyCents / 100),
+        priceCurrency: "USD",
       }),
     );
+    expect(new Set(text.match(/\$\d+/g))).toEqual(new Set([PLAN_PRICE]));
     expect(questions.length).toBeGreaterThan(0);
     for (const question of questions) {
       expect(question["@type"]).toBe("Question");
@@ -105,14 +106,12 @@ describe("prerendered public site", () => {
     }
   });
 
-  it("R26: the pricing page shows both plans from one config", () => {
+  it("R26: the pricing page shows the one $4 plan from one config", () => {
     const text = readText(readPage("/pricing"));
 
-    for (const plan of PLAN_ORDER) {
-      expect(text).toContain(PLANS[plan].name);
-      expect(text).toContain(`${formatDollars(PLANS[plan].monthlyCents)}/mo`);
-      expect(text).toContain(`${PLANS[plan].linkLimit.toLocaleString("en-US")} links`);
-    }
+    expect(formatDollars(PAID_PLAN.monthlyCents)).toBe(PLAN_PRICE);
+    expect(text).toContain(`${PLAN_PRICE} / month · cancel anytime`);
+    expect(text).toContain("Up to 500 product links");
     expect(text).toContain("one product variant");
     expect(text).toMatch(/14[- ]day/);
     expect(text).toContain("Paddle");
@@ -124,7 +123,7 @@ describe("prerendered public site", () => {
 
     expect(text).toContain("Prisync");
     expect(text).toContain("PriceMole");
-    for (const price of [...COMPETITOR_PRICES, ...PLAN_ORDER.map((plan) => formatDollars(PLANS[plan].monthlyCents))]) {
+    for (const price of [...COMPETITOR_PRICES, PLAN_PRICE]) {
       expect(text).toContain(price);
     }
     for (const source of COMPETITOR_SOURCES) {
@@ -184,6 +183,16 @@ describe("prerendered public site", () => {
     }
   });
 
+  it("R26: no public page names a tier, a billing toggle or a pack", () => {
+    for (const pagePath of PUBLIC_PATHS) {
+      const html = readPage(pagePath);
+      const ownText = pagePath === "/prisync-alternative" ? "" : readText(html);
+
+      expect(ownText, pagePath).not.toMatch(TIER_WORDS);
+      expect(html, pagePath).not.toMatch(/\$(9|19)\b/);
+    }
+  });
+
   it("R29: robots, sitemap and llms list the public pages", () => {
     const robots = readFile("robots.txt");
     const sitemapUrls = [...readFile("sitemap.xml").matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
@@ -192,11 +201,9 @@ describe("prerendered public site", () => {
     expect(robots).toContain("Disallow: /app/");
     expect(robots).toContain(`Sitemap: ${SITE_URL}/sitemap.xml`);
     expect(sitemapUrls.toSorted()).toEqual(PUBLIC_PATHS.map((pagePath) => buildPageUrl(pagePath)).toSorted());
-    for (const plan of PLAN_ORDER) {
-      expect(llms).toContain(PLANS[plan].name);
-      expect(llms).toContain(formatDollars(PLANS[plan].monthlyCents));
-      expect(llms).toContain(`${PLANS[plan].linkLimit.toLocaleString("en-US")} links`);
-    }
+    expect(llms).toContain(`${PLAN_PRICE}/month`);
+    expect(llms).toContain(PLAN_LINKS);
+    expect(llms).not.toMatch(TIER_WORDS);
     for (const pagePath of PUBLIC_PATHS) {
       expect(llms).toContain(buildPageUrl(pagePath));
     }

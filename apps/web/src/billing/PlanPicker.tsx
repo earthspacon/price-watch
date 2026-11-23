@@ -1,8 +1,7 @@
-import { PLANS } from "@price-watch/contract";
 import { useUnit } from "effector-react";
 import { Loader2 } from "lucide-react";
 
-import { PlanCards } from "../pricing/PlanCards";
+import { PlanCard } from "../pricing/PlanCard";
 import { Banner, BUTTON_PRIMARY } from "../shared/ui";
 import { $checkoutError, $isWaitingForPlan, billingRemote, checkoutClicked } from "./model";
 
@@ -27,23 +26,22 @@ export const PlanPicker = () => {
   return (
     <section className="space-y-4">
       <p className="text-sm text-slate-600">
-        Choose a plan below. Paddle is the merchant of record and adds sales tax or VAT where due.
+        One plan, everything included. Paddle is the merchant of record and adds sales tax or VAT where due.
       </p>
       {checkoutError && <Banner tone="danger">{checkoutError}</Banner>}
       {billing && !billing.checkout && <Banner tone="warning">Checkout isn't available on this server yet.</Banner>}
-      <PlanCards
-        renderAction={(plan) => {
-          return (
-            <button
-              type="button"
-              disabled={!billing?.checkout}
-              onClick={() => checkoutClicked(plan)}
-              className={`${BUTTON_PRIMARY} w-full`}
-            >
-              Start {PLANS[plan].name}
-            </button>
-          );
-        }}
+      <PlanCard
+        className="sm:mx-0"
+        action={
+          <button
+            type="button"
+            disabled={!billing?.checkout}
+            onClick={() => checkoutClicked()}
+            className={`${BUTTON_PRIMARY} min-h-11 w-full`}
+          >
+            Start tracking
+          </button>
+        }
       />
     </section>
   );

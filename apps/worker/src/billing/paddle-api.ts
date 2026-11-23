@@ -41,32 +41,3 @@ export async function createPortalSession({
   }
   return url;
 }
-
-// developer.paddle.com/api-reference/subscriptions/update-subscription
-export async function switchSubscriptionPrice({
-  env,
-  apiKey,
-  subscriptionId,
-  priceId,
-}: {
-  env: Env;
-  apiKey: string;
-  subscriptionId: string;
-  priceId: string;
-}) {
-  const response = await fetch(`${API_BASE[getPaddleEnvironment(env)]}/subscriptions/${subscriptionId}`, {
-    method: "PATCH",
-    headers: {
-      authorization: `Bearer ${apiKey}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      items: [{ price_id: priceId, quantity: 1 }],
-      proration_billing_mode: "prorated_immediately",
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Paddle returned ${response.status}`);
-  }
-}

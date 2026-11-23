@@ -2,7 +2,7 @@
 
 PriceDawn tracks your competitors' Shopify prices. Paste the product links you watch by hand, and every morning at 7:00 in your time zone you get one email that says which products changed price, from what to what and by how much. Each link is checked once a day through the store's public product data. If a product disappears, a store blocks the check or nothing changed, the email says so — it never invents a price change.
 
-Two plans: Starter, $9 a month for 250 links, and Pro, $19 a month for 1,000. Paid through Paddle. Every plan includes the full price history as a CSV.
+One plan: $4 a month for up to 500 links, cancel anytime. Paid through Paddle. It includes the full price history as a CSV.
 
 ## Layout
 
@@ -27,7 +27,7 @@ pnpm dev                         # wrangler dev on http://localhost:8787
 With `DEV_ROUTES=1` the app talks to a local outbox and a fake store instead of Brevo and Shopify:
 
 - Sign-in links go to the `dev_outbox` table. Read them with `GET /dev/outbox?to=<email>`.
-- `POST /dev/accounts {"email": "...", "plan": "starter"}` creates an account without Paddle. Add `"status": "active"` to skip the plan step.
+- `POST /dev/accounts {"email": "...", "plan": "paid"}` creates an account without Paddle. Add `"status": "active"` to skip the plan step.
 - `POST /dev/run-checks {"now": "2026-11-21T01:05:00Z"}` runs the every-minute check cron once, at the clock you pass.
 - `POST /dev/run-digests {"now": "2026-11-21T07:05:00Z"}` runs the hourly digest cron once.
 - Set `DEV_STORE_ORIGIN=http://localhost:9000` and the checker fetches `http://localhost:9000/<store host>/products/<handle>.json` instead of the real store. Any small HTTP server that answers that path with Shopify's product JSON works. The e2e suite starts one for you (`apps/web/e2e/fake-store.ts`) and can swap a product's price between checks.

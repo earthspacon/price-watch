@@ -32,7 +32,7 @@ const FOOTER = `Your links: ${env.APP_URL}/app`;
 
 async function startDigestAccount({ prefix, urls }: { prefix: string; urls: string[] }) {
   const email = uniqueEmail({ prefix });
-  const { cookie } = await signInAccount({ email, plan: "pro", status: "active" });
+  const { cookie } = await signInAccount({ email, plan: "paid", status: "active" });
   const saved = await saveTimeZone({ cookie, timeZone: ZONE });
   expect(saved.status, "PUT /api/account/time-zone").toBe(204);
   await addLinks({ cookie, urls });
@@ -235,7 +235,7 @@ describe("morning digest", () => {
 
 describe("time zone", () => {
   it("R23: the browser time zone is saved once", async () => {
-    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "zone" }), plan: "pro", status: "active" });
+    const { cookie } = await signInAccount({ email: uniqueEmail({ prefix: "zone" }), plan: "paid", status: "active" });
     expect((await readMe({ cookie })).timeZone).toBeNull();
 
     const saved = await saveTimeZone({ cookie, timeZone: ZONE });
@@ -247,7 +247,7 @@ describe("time zone", () => {
   it("R23: an unknown time zone gets 400", async () => {
     const { cookie } = await signInAccount({
       email: uniqueEmail({ prefix: "bad-zone" }),
-      plan: "pro",
+      plan: "paid",
       status: "active",
     });
     expect((await saveTimeZone({ cookie, timeZone: ZONE })).status).toBe(204);

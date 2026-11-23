@@ -5,6 +5,11 @@ export type FaqItem = {
 
 export const FAQ_ITEMS: readonly FaqItem[] = [
   {
+    question: "How much does it cost?",
+    answer:
+      "$4 a month for up to 500 links, with every feature included. There is one plan, and you can cancel it at any time from the billing page.",
+  },
+  {
     question: "What counts as a link?",
     answer:
       "A link is one product variant in a competitor's Shopify store. If a shirt comes in three sizes, each size is its own link and its own price check.",

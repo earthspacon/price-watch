@@ -1,17 +1,10 @@
-import { isLive, PLANS, type BillingDto, type Plan, type SubscriptionStatus } from "@price-watch/contract";
+import { isLive, type BillingDto, type SubscriptionStatus } from "@price-watch/contract";
 import { useGate, useUnit } from "effector-react";
 
-import {
-  $isWaitingForPlan,
-  BillingGate,
-  billingRemote,
-  manageBillingClicked,
-  portalFx,
-  switchClicked,
-  switchFx,
-} from "../billing/model";
+import { BillingGate, billingRemote, manageBillingClicked, portalFx } from "../billing/model";
 import { PlanPicker } from "../billing/PlanPicker";
-import { BUTTON_PRIMARY, BUTTON_SECONDARY, Card, ErrorState, formatDay, LoadingState, PageHeader } from "../shared/ui";
+import { PLAN_PRICE_LINE } from "../pricing/plan";
+import { BUTTON_SECONDARY, Card, ErrorState, formatDay, LoadingState, PageHeader } from "../shared/ui";
 
 const STATUS_TEXT: Record<SubscriptionStatus, string> = {
   no_subscription: "No plan yet",
@@ -20,11 +13,6 @@ const STATUS_TEXT: Record<SubscriptionStatus, string> = {
   past_due: "Payment failed",
   paused: "Paused",
   canceled: "Canceled",
-};
-
-const OTHER_PLAN: Record<Plan, Plan> = {
-  starter: "pro",
-  pro: "starter",
 };
 
 export const BillingPage = () => {
@@ -63,32 +51,16 @@ const BillingView = () => {
 };
 
 const CurrentPlan = ({ billing }: { billing: BillingDto }) => {
-  const { isOpening, isSwitching, isWaiting } = useUnit({
-    isOpening: portalFx.pending,
-    isSwitching: switchFx.pending,
-    isWaiting: $isWaitingForPlan,
-  });
-  const { plan } = billing;
-  const switchTarget = plan && isLive(billing.subscription) ? OTHER_PLAN[plan] : null;
+  const isOpening = useUnit(portalFx.pending);
 
   return (
     <Card className="space-y-4 p-5">
       <dl className="grid gap-3 text-sm sm:grid-cols-3">
-        <Fact label="Plan" value={plan ? PLANS[plan].name : "—"} />
+        <Fact label="Plan" value={billing.plan ? PLAN_PRICE_LINE : "—"} />
         <Fact label="Status" value={STATUS_TEXT[billing.subscription]} />
         <Fact label="Next bill" value={billing.nextBilledAt ? formatDay(billing.nextBilledAt) : "—"} />
       </dl>
       <div className="flex flex-wrap gap-2">
-        {switchTarget && (
-          <button
-            type="button"
-            disabled={isSwitching || isWaiting}
-            onClick={() => switchClicked(switchTarget)}
-            className={BUTTON_PRIMARY}
-          >
-            Switch to {PLANS[switchTarget].name}
-          </button>
-        )}
         {billing.subscription !== "no_subscription" && (
           <button
             type="button"
@@ -100,11 +72,8 @@ const CurrentPlan = ({ billing }: { billing: BillingDto }) => {
           </button>
         )}
       </div>
-      {switchTarget && (
-        <p className="text-xs text-slate-500">
-          Switching is prorated: Paddle charges or credits the difference right away. Use Manage billing to update your
-          card, download invoices or cancel.
-        </p>
+      {billing.subscription !== "no_subscription" && (
+        <p className="text-xs text-slate-500">Use Manage billing to update your card, download invoices or cancel.</p>
       )}
     </Card>
   );

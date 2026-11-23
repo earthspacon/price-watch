@@ -1,7 +1,7 @@
 import type { Browser, Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { PADDLE_TEST_PRICES } from "./config";
+import { PADDLE_TEST_PRICE } from "./config";
 import { createAccount, launchBrowser, openAccount } from "./helpers";
 
 type CheckoutOptions = {
@@ -54,29 +54,26 @@ describe("plan picker", () => {
     await browser.close();
   });
 
-  it("R5: an account without a plan sees both plans and a disabled paste box", async () => {
+  it("R5: an account without a plan sees the one $4 plan and a disabled paste box", async () => {
     const { page } = await openAccount({ browser });
 
-    await page.getByText("Pick a plan to start tracking").waitFor();
-    const starter = page.getByRole("button", { name: /Starter/ });
-    const pro = page.getByRole("button", { name: /Pro/ });
+    await page.getByText("Start the plan to begin tracking").waitFor();
 
-    expect(await starter.isVisible()).toBe(true);
-    expect(await pro.isVisible()).toBe(true);
-    expect(await page.getByText("$9").first().isVisible()).toBe(true);
-    expect(await page.getByText("$19").first().isVisible()).toBe(true);
+    expect(await page.getByRole("button", { name: "Start tracking" }).isVisible()).toBe(true);
+    expect(await page.getByText("$4 / month · cancel anytime").isVisible()).toBe(true);
+    expect(await page.getByText(/Starter|Pro\b|\$9|\$19/).count()).toBe(0);
     expect(await page.getByRole("textbox", { name: /product links/i }).isDisabled()).toBe(true);
   });
 
-  it("R5: choosing Starter opens Paddle checkout with the Starter price", async () => {
+  it("R5: starting the plan opens Paddle checkout with the $4 price", async () => {
     const { page, email, accountId } = await openAccount({ browser });
     const checkouts = await stubPaddle({ page });
 
-    await page.getByRole("button", { name: /Starter/ }).click();
+    await page.getByRole("button", { name: "Start tracking" }).click();
     await expect.poll(() => checkouts.length, { timeout: CHECKOUT_TIMEOUT_MS }).toBe(1);
 
     expect(checkouts[0]).toMatchObject({
-      items: [{ priceId: PADDLE_TEST_PRICES.starter, quantity: 1 }],
+      items: [{ priceId: PADDLE_TEST_PRICE, quantity: 1 }],
       customer: { email },
       customData: { account_id: accountId },
     });
@@ -96,7 +93,7 @@ describe("plan picker", () => {
         return route.fallback();
       }
       failedPolls += 1;
-      await createAccount({ email, plan: "starter", status: "active" });
+      await createAccount({ email, plan: "paid", status: "active" });
       return route.fulfill({
         status: 500,
         contentType: "application/json",
@@ -104,15 +101,12 @@ describe("plan picker", () => {
       });
     });
 
-    await page
-      .getByRole("button", { name: /Starter/ })
-      .and(page.locator(":enabled"))
-      .waitFor();
+    await page.getByRole("button", { name: "Start tracking" }).and(page.locator(":enabled")).waitFor();
     isCheckoutClicked = true;
-    await page.getByRole("button", { name: /Starter/ }).click();
+    await page.getByRole("button", { name: "Start tracking" }).click();
 
     await page.getByText("Payment received. Turning your plan on…").waitFor();
-    await page.getByText("Pick a plan to start tracking").waitFor({ state: "hidden", timeout: POLL_TIMEOUT_MS });
+    await page.getByText("Start the plan to begin tracking").waitFor({ state: "hidden", timeout: POLL_TIMEOUT_MS });
     expect(failedPolls).toBe(1);
   });
 });

@@ -1,4 +1,4 @@
-export type Plan = "starter" | "pro";
+export type Plan = "paid";
 
 export type SubscriptionStatus = "no_subscription" | "trialing" | "active" | "past_due" | "paused" | "canceled";
 
@@ -65,7 +65,7 @@ export type BillingDto = {
     accountId: string;
     clientToken: string;
     environment: "sandbox" | "production";
-    prices: Record<Plan, string>;
+    priceId: string;
   } | null;
 };
 

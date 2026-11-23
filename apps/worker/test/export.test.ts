@@ -79,7 +79,7 @@ function byRecordedAt(left: Record<string, string>, right: Record<string, string
 }
 
 async function startExportAccount({ prefix }: { prefix: string }) {
-  return signInAccount({ email: uniqueEmail({ prefix }), plan: "pro", status: "active" });
+  return signInAccount({ email: uniqueEmail({ prefix }), plan: "paid", status: "active" });
 }
 
 describe("price history export", () => {

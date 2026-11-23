@@ -4,17 +4,13 @@ import activated from "../fixtures/paddle/subscription.activated.json?raw";
 import canceled from "../fixtures/paddle/subscription.canceled.json?raw";
 import created from "../fixtures/paddle/subscription.created.json?raw";
 import pastDue from "../fixtures/paddle/subscription.past_due.json?raw";
-import downgrade from "../fixtures/paddle/subscription.updated-downgrade.json?raw";
 import scheduledCancel from "../fixtures/paddle/subscription.updated-scheduled-cancel.json?raw";
-import upgrade from "../fixtures/paddle/subscription.updated-upgrade.json?raw";
 import paymentFailed from "../fixtures/paddle/transaction.payment_failed.json?raw";
 import { BASE } from "./session";
 
 export const PADDLE_FIXTURES = {
   created,
   activated,
-  upgrade,
-  downgrade,
   scheduledCancel,
   pastDue,
   canceled,

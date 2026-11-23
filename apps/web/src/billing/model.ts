@@ -1,9 +1,9 @@
-import { isLive, type BillingDto, type Plan } from "@price-watch/contract";
+import { isLive, type BillingDto } from "@price-watch/contract";
 import { attach, createEffect, createEvent, createStore, sample } from "effector";
 import { createGate } from "effector-react";
 
 import { $me, meRefreshRequested } from "../session/model";
-import { apiCommand, apiRequest } from "../shared/api";
+import { apiRequest } from "../shared/api";
 import { createRemote } from "../shared/remote";
 import { toastShown } from "../shared/toast-model";
 import { loadPaddle, openPaddleCheckout } from "./paddle";
@@ -15,8 +15,7 @@ const CHECKOUT_COMPLETED_EVENT = "checkout.completed";
 
 export const BillingGate = createGate();
 
-export const checkoutClicked = createEvent<Plan>();
-export const switchClicked = createEvent<Plan>();
+export const checkoutClicked = createEvent();
 export const manageBillingClicked = createEvent();
 const paddleEventReceived = createEvent<string>();
 
@@ -27,7 +26,6 @@ export const billingRemote = createRemote<void, BillingDto | null>({
   initial: null,
 });
 
-export const $expectedPlan = createStore<Plan | null>(null);
 export const $isWaitingForPlan = createStore(false);
 export const $checkoutError = createStore("");
 const $pollAttempts = createStore(0);
@@ -37,7 +35,7 @@ const openCheckoutFx = attach({
     billing: billingRemote.$data,
     me: $me,
   },
-  effect: async ({ billing, me }, plan: Plan) => {
+  effect: async ({ billing, me }) => {
     if (!billing?.checkout || !me) {
       throw new Error("Checkout isn't available yet");
     }
@@ -47,19 +45,11 @@ const openCheckoutFx = attach({
     });
     openPaddleCheckout({
       paddle,
-      priceId: billing.checkout.prices[plan],
+      priceId: billing.checkout.priceId,
       email: me.email,
       accountId: billing.checkout.accountId,
     });
   },
-});
-
-export const switchFx = createEffect((plan: Plan) => {
-  return apiCommand({
-    path: "/api/billing/switch",
-    method: "POST",
-    body: { plan },
-  });
 });
 
 export const portalFx = createEffect(async () => {
@@ -82,11 +72,6 @@ sample({
 
 // #region checkout
 sample({
-  clock: [checkoutClicked, switchClicked],
-  target: $expectedPlan,
-});
-
-sample({
   clock: checkoutClicked,
   target: [openCheckoutFx, $checkoutError.reinit],
 });
@@ -103,30 +88,6 @@ sample({
   filter: (name) => name === CHECKOUT_COMPLETED_EVENT,
   fn: () => true,
   target: [$isWaitingForPlan, $pollAttempts.reinit, waitFx],
-});
-// #endregion
-
-// #region switch
-sample({
-  clock: switchClicked,
-  target: switchFx,
-});
-
-sample({
-  clock: switchFx.done,
-  fn: () => true,
-  target: [$isWaitingForPlan, $pollAttempts.reinit, waitFx],
-});
-
-sample({
-  clock: switchFx.failData,
-  fn: (error) => {
-    return {
-      text: error.message,
-      tone: "error" as const,
-    };
-  },
-  target: toastShown,
 });
 // #endregion
 
@@ -167,13 +128,13 @@ sample({
   clock: waitFx.done,
   source: $pollAttempts,
   filter: (attempts) => attempts >= MAX_ACTIVATION_POLLS,
-  target: [$isWaitingForPlan.reinit, $expectedPlan.reinit],
+  target: $isWaitingForPlan.reinit,
 });
 
 sample({
   clock: billingRemote.fx.doneData,
-  source: { isWaiting: $isWaitingForPlan, expected: $expectedPlan },
-  filter: ({ isWaiting, expected }, billing) => isWaiting && !isPlanApplied({ billing, expected }),
+  source: $isWaitingForPlan,
+  filter: (isWaiting, billing) => isWaiting && !isPlanApplied(billing),
   target: waitFx,
 });
 
@@ -186,9 +147,9 @@ sample({
 
 sample({
   clock: billingRemote.fx.doneData,
-  source: { isWaiting: $isWaitingForPlan, expected: $expectedPlan },
-  filter: ({ isWaiting, expected }, billing) => isWaiting && isPlanApplied({ billing, expected }),
-  target: [$isWaitingForPlan.reinit, $expectedPlan.reinit, meRefreshRequested],
+  source: $isWaitingForPlan,
+  filter: (isWaiting, billing) => isWaiting && isPlanApplied(billing),
+  target: [$isWaitingForPlan.reinit, meRefreshRequested],
 });
 // #endregion
 
@@ -210,6 +171,6 @@ sample({
 });
 // #endregion
 
-function isPlanApplied({ billing, expected }: { billing: BillingDto | null; expected: Plan | null }) {
-  return billing !== null && billing.plan === expected && isLive(billing.subscription);
+function isPlanApplied(billing: BillingDto | null) {
+  return billing !== null && billing.plan !== null && isLive(billing.subscription);
 }

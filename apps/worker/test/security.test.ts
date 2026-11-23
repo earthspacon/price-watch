@@ -21,7 +21,7 @@ describe("security", () => {
   it("R30: every worker response carries the security headers", async () => {
     const { cookie } = await signInAccount({
       email: uniqueEmail({ prefix: "headers" }),
-      plan: "pro",
+      plan: "paid",
       status: "active",
     });
     const responses = {
@@ -41,8 +41,12 @@ describe("security", () => {
   });
 
   it("R31: every id route returns 404 for another account's link", async () => {
-    const owner = await signInAccount({ email: uniqueEmail({ prefix: "owner" }), plan: "pro", status: "active" });
-    const stranger = await signInAccount({ email: uniqueEmail({ prefix: "stranger" }), plan: "pro", status: "active" });
+    const owner = await signInAccount({ email: uniqueEmail({ prefix: "owner" }), plan: "paid", status: "active" });
+    const stranger = await signInAccount({
+      email: uniqueEmail({ prefix: "stranger" }),
+      plan: "paid",
+      status: "active",
+    });
     await addLinks({ cookie: owner.cookie, urls: [productUrl({ host: "rival.example", handle: "linen-shirt" })] });
     const linkId = await findLinkId({ accountId: owner.accountId, host: "rival.example", handle: "linen-shirt" });
 

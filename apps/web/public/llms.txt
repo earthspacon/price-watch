@@ -2,9 +2,8 @@
 
 > PriceDawn checks your competitors' Shopify product prices every day and emails you what changed each morning at 7:00 in your time zone.
 
-## Plans
-- Starter: $9/mo, 250 links
-- Pro: $19/mo, 1,000 links
+## Price
+- One plan: $4/month for up to 500 links, cancel anytime
 
 ## Pages
 - Home: https://pricedawn.spacesonlabs.com
@@ -19,4 +18,4 @@
 - A link is one product variant.
 - Shopify stores only.
 - A price is shown as the plain number from the store's product data; a link is only compared with itself.
-- Every plan includes the CSV export of the full price history.
+- The plan includes the CSV export of the full price history.
