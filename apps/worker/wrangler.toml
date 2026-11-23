@@ -89,5 +89,5 @@ DEV_ROUTES = "0"
 PADDLE_ENV = "production"
 PADDLE_CLIENT_TOKEN = "live_3b61bcdd32f8d33be89d9c88e97"
 # Empty until .agents/paddle-provision.mjs creates the $4 price: checkout stays off rather than charge an old price.
-PADDLE_PRICE = ""
+PADDLE_PRICE = "pri_01m84q7y99hjwpbad4rpe4mkdz"
 OWNER_ALERT_EMAIL = "alerts@spacesonlabs.com"
