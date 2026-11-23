@@ -39,6 +39,7 @@ const OG_IMAGE_SIZE = {
   height: 630,
 };
 const NOINDEX = '<meta name="robots" content="noindex" />';
+const MAX_TITLE_LENGTH = 70;
 
 const files = new Map(
   buildPrerenderedFiles(TEMPLATE).map(({ file, content }) => {
@@ -94,6 +95,14 @@ describe("prerendered public site", () => {
     }
     expect(titles.size).toBe(PUBLIC_PATHS.length);
     expect(readPngSize(OG_IMAGE_FILE)).toEqual(OG_IMAGE_SIZE);
+  });
+
+  it("every page title fits a search result without being cut", () => {
+    for (const pagePath of PUBLIC_PATHS) {
+      const title = readText(/<title>(.*?)<\/title>/.exec(readPage(pagePath))?.[1] ?? "");
+
+      expect(title.length, `${pagePath}: ${title}`).toBeLessThanOrEqual(MAX_TITLE_LENGTH);
+    }
   });
 
   it("R26: the pricing page shows both plans from one config", () => {

@@ -69,7 +69,7 @@ const PAGES: readonly PageDefinition[] = [
   {
     path: "/tools/shopify-price-checker",
     file: "tools/shopify-price-checker.html",
-    title: `${PRICE_CHECKER_TITLE}: free, no sign-up | PriceDawn`,
+    title: `${PRICE_CHECKER_TITLE}, free | PriceDawn`,
     description:
       "Paste a Shopify product link and see each variant's current price and compare-at price. Free, no sign-up.",
     render: () => <PriceCheckerPage />,
