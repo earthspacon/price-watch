@@ -2,6 +2,8 @@
 
 PriceDawn tracks your competitors' Shopify prices. Paste the product links you watch by hand, and every morning at 7:00 in your time zone you get one email that says which products changed price, from what to what and by how much. Each link is checked once a day through the store's public product data. If a product disappears, a store blocks the check or nothing changed, the email says so — it never invents a price change.
 
+Live at [pricedawn.spacesonlabs.com](https://pricedawn.spacesonlabs.com). TypeScript end to end: a React + Effector + Tailwind SPA, a Cloudflare Worker on D1 with Cron Triggers for the checks and the digest, Brevo for mail and Paddle for billing. Tested with Vitest (the worker tests run inside workerd) and Playwright flows against a real build.
+
 One plan: $4 a month for up to 500 links, cancel anytime. Paid through Paddle. It includes the full price history as a CSV.
 
 ## Layout
@@ -60,3 +62,7 @@ On the Free plan one every-minute cron does at most 20 checks a minute, about 28
 The hourly job (the :00 tick of the same trigger) wakes each account whose local clock has reached 07:00 and whose local day is newer than the last digest. It reads the price points with a previous price and the links that failed since the last digest, and sends one plain-text email grouped by store. On a quiet day it sends nothing — Brevo Free allows 300 emails a day, and a quiet morning should not spend one.
 
 Either way it records the local date and moves the digest cursor, so the next morning starts from a clean slate. A send that fails (provider down or over quota) leaves the account unmarked, and the next hourly run retries it. The digest footer links back to `<APP_URL>/app`.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
