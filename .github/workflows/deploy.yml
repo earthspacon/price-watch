@@ -28,8 +28,9 @@ jobs:
       - name: Build the site
         run: pnpm --filter @price-watch/web build
         env:
-          # The Turnstile site key is public, it ships in the page.
+          # The Turnstile site key and the Web Analytics token are public, they ship in the page.
           VITE_TURNSTILE_SITE_KEY: 0x4AAAAAAGMNQCUUvRngLEVS
+          VITE_CF_BEACON_TOKEN: 72a72b8487414fbaaa1682dc27eda02a
       - name: Apply database migrations
         working-directory: apps/worker
         run: pnpm exec wrangler d1 migrations apply DB --remote --env production
