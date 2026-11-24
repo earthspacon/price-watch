@@ -1,7 +1,7 @@
 import type { Browser, Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { PADDLE_TEST_PRICE } from "./config";
+import { PADDLE_TEST_PRICE, PADDLE_TEST_YEARLY_PRICE } from "./config";
 import { createAccount, launchBrowser, openAccount } from "./helpers";
 
 type CheckoutOptions = {
@@ -61,6 +61,7 @@ describe("plan picker", () => {
 
     expect(await page.getByRole("button", { name: "Start tracking" }).isVisible()).toBe(true);
     expect(await page.getByText("$4 / month · cancel anytime").isVisible()).toBe(true);
+    expect(await page.getByText("$40 / year · 2 months free").isVisible()).toBe(false);
     expect(await page.getByText(/Starter|Pro\b|\$9|\$19/).count()).toBe(0);
     expect(await page.getByRole("textbox", { name: /product links/i }).isDisabled()).toBe(true);
   });
@@ -77,6 +78,19 @@ describe("plan picker", () => {
       customer: { email },
       customData: { account_id: accountId },
     });
+  });
+
+  it("R5: the yearly switch shows $40 a year and opens Paddle checkout with the yearly price", async () => {
+    const { page } = await openAccount({ browser });
+    const checkouts = await stubPaddle({ page });
+
+    await page.getByRole("button", { name: "Yearly" }).click();
+    await page.getByText("$40 / year · 2 months free").waitFor();
+    expect(await page.getByText("$4 / month · cancel anytime").isVisible()).toBe(false);
+    await page.getByRole("button", { name: "Start tracking" }).click();
+    await expect.poll(() => checkouts.length, { timeout: CHECKOUT_TIMEOUT_MS }).toBe(1);
+
+    expect(checkouts[0]?.items).toEqual([{ priceId: PADDLE_TEST_YEARLY_PRICE, quantity: 1 }]);
   });
 
   it("R5: a failed billing poll after checkout is retried until the plan appears", async () => {

@@ -3,7 +3,7 @@ import { useGate, useUnit } from "effector-react";
 
 import { BillingGate, billingRemote, manageBillingClicked, portalFx } from "../billing/model";
 import { PlanPicker } from "../billing/PlanPicker";
-import { PLAN_PRICE_LINE } from "../pricing/plan";
+import { PAID_PLAN_LINE } from "../pricing/plan";
 import { BUTTON_SECONDARY, Card, ErrorState, formatDay, LoadingState, PageHeader } from "../shared/ui";
 
 const STATUS_TEXT: Record<SubscriptionStatus, string> = {
@@ -56,7 +56,7 @@ const CurrentPlan = ({ billing }: { billing: BillingDto }) => {
   return (
     <Card className="space-y-4 p-5">
       <dl className="grid gap-3 text-sm sm:grid-cols-3">
-        <Fact label="Plan" value={billing.plan ? PLAN_PRICE_LINE : "—"} />
+        <Fact label="Plan" value={billing.plan ? PAID_PLAN_LINE : "—"} />
         <Fact label="Status" value={STATUS_TEXT[billing.subscription]} />
         <Fact label="Next bill" value={billing.nextBilledAt ? formatDay(billing.nextBilledAt) : "—"} />
       </dl>

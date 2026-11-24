@@ -1,9 +1,11 @@
 import type { Plan, SubscriptionStatus } from "./domain";
 
-// One paid plan. Kept as a record keyed by plan so stored rows and webhooks have a name to point at.
-export const PLANS: Record<Plan, { monthlyCents: number; linkLimit: number }> = {
+// One paid plan, $4 a month or $40 a year (2 months free). Kept as a record keyed by plan so stored rows and
+// webhooks have a name to point at.
+export const PLANS: Record<Plan, { monthlyCents: number; yearlyCents: number; linkLimit: number }> = {
   paid: {
     monthlyCents: 400,
+    yearlyCents: 4000,
     linkLimit: 500,
   },
 };

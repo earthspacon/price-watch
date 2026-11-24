@@ -1,6 +1,7 @@
 import type { BillingDto } from "@price-watch/contract";
 
 import { createPortalSession, getPaddleEnvironment } from "../billing/paddle-api";
+import { findPriceIds } from "../billing/prices";
 import type { Deps } from "../deps";
 import { HttpError, json, route, type Route } from "../http";
 import { getBillingRow } from "../repo/accounts";
@@ -41,19 +42,19 @@ async function requireBillingRow({ deps, accountId }: { deps: Deps; accountId: s
 
 async function loadBilling({ deps, accountId }: { deps: Deps; accountId: string }) {
   const row = await requireBillingRow({ deps, accountId });
-  const priceId = deps.env.PADDLE_PRICE;
+  const priceIds = findPriceIds(deps.env);
   const clientToken = deps.env.PADDLE_CLIENT_TOKEN;
   const billing: BillingDto = {
     plan: row.plan,
     subscription: row.status,
     nextBilledAt: row.next_billed_at,
     checkout:
-      clientToken && priceId
+      clientToken && priceIds.monthly
         ? {
             accountId,
             clientToken,
             environment: getPaddleEnvironment(deps.env),
-            priceId,
+            priceIds,
           }
         : null,
   };

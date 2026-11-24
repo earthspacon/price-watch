@@ -7,7 +7,7 @@ export const FAQ_ITEMS: readonly FaqItem[] = [
   {
     question: "How much does it cost?",
     answer:
-      "$4 a month for up to 500 links, with every feature included. There is one plan, and you can cancel it at any time from the billing page.",
+      "$4 a month, or $40 a year with 2 months free, for up to 500 links, with every feature included. There is one plan, and you can cancel it at any time from the billing page.",
   },
   {
     question: "What counts as a link?",

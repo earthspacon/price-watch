@@ -8,6 +8,7 @@ import {
   fakePaddleApi,
   PADDLE_FIXTURES,
   PADDLE_SANDBOX_API,
+  type PaddleFixture,
   postPaddleEvent,
   sendFixture,
 } from "./paddle";
@@ -28,6 +29,10 @@ async function signInActivePaid({ prefix }: { prefix: string }) {
   const activated = await sendFixture({ fixture: "activated", accountId: account.accountId });
   expect(activated.status, "subscription.activated webhook").toBe(200);
   return account;
+}
+
+function buildYearlyEvent({ fixture, accountId }: { fixture: PaddleFixture; accountId: string }) {
+  return buildPaddleEvent({ fixture, accountId }).replaceAll(env.PADDLE_PRICE, env.PADDLE_PRICE_YEARLY);
 }
 
 function countOwnerMails() {
@@ -149,6 +154,34 @@ describe("billing", () => {
       expect(csv.status).toBe(200);
       expect(csv.headers.get("content-type")).toMatch(/^text\/csv/);
     }
+  });
+
+  it("R6: a yearly subscription.created turns tracking on with the paid plan limit", async () => {
+    const { accountId, cookie } = await signInAccount({ email: uniqueEmail({ prefix: "yearly-created" }) });
+    const body = buildYearlyEvent({ fixture: "created", accountId });
+
+    const response = await postPaddleEvent({ body });
+
+    expect(response.status).toBe(200);
+    expect(await readMe({ cookie })).toMatchObject({
+      plan: "paid",
+      subscription: "active",
+      linkLimit: PAID_LINK_LIMIT,
+    });
+  });
+
+  it("R6: a yearly subscription.updated keeps the paid plan", async () => {
+    const { accountId, cookie } = await signInAccount({ email: uniqueEmail({ prefix: "yearly-updated" }) });
+    await postPaddleEvent({ body: buildYearlyEvent({ fixture: "activated", accountId }) });
+
+    const response = await postPaddleEvent({ body: buildYearlyEvent({ fixture: "scheduledCancel", accountId }) });
+
+    expect(response.status).toBe(200);
+    expect(await readMe({ cookie })).toMatchObject({
+      plan: "paid",
+      subscription: "active",
+      linkLimit: PAID_LINK_LIMIT,
+    });
   });
 
   it("R6: an activation on any other price, like the old $9 one, turns nothing on", async () => {

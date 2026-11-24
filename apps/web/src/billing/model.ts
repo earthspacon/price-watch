@@ -6,6 +6,7 @@ import { $me, meRefreshRequested } from "../session/model";
 import { apiRequest } from "../shared/api";
 import { createRemote } from "../shared/remote";
 import { toastShown } from "../shared/toast-model";
+import { $period } from "../pricing/model";
 import { loadPaddle, openPaddleCheckout } from "./paddle";
 
 const ACTIVATION_POLL_MS = 2000;
@@ -34,9 +35,11 @@ const openCheckoutFx = attach({
   source: {
     billing: billingRemote.$data,
     me: $me,
+    period: $period,
   },
-  effect: async ({ billing, me }) => {
-    if (!billing?.checkout || !me) {
+  effect: async ({ billing, me, period }) => {
+    const priceId = billing?.checkout?.priceIds[period];
+    if (!billing?.checkout || !priceId || !me) {
       throw new Error("Checkout isn't available yet");
     }
     const paddle = await loadPaddle({
@@ -45,7 +48,7 @@ const openCheckoutFx = attach({
     });
     openPaddleCheckout({
       paddle,
-      priceId: billing.checkout.priceId,
+      priceId,
       email: me.email,
       accountId: billing.checkout.accountId,
     });

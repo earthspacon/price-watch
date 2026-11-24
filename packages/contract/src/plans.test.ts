@@ -4,13 +4,19 @@ import type { SubscriptionStatus } from "./domain";
 import { formatPrice, isLive, PLANS } from "./plans";
 
 describe("plans", () => {
-  it("R4: one paid plan, $4 a month for 500 links", () => {
+  it("R4: one paid plan, $4 a month or $40 a year for 500 links", () => {
     expect(PLANS).toEqual({
       paid: {
         monthlyCents: 400,
+        yearlyCents: 4000,
         linkLimit: 500,
       },
     });
+  });
+
+  it("R4: the yearly price is 10 monthly prices, 2 months free", () => {
+    expect(PLANS.paid.yearlyCents).toBe(PLANS.paid.monthlyCents * 10);
+    expect(formatPrice(PLANS.paid.yearlyCents)).toBe("$40");
   });
 
   it("R4: prices read as whole dollars unless there are cents", () => {

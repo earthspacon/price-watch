@@ -45,6 +45,7 @@ DEV_ROUTES = "0"
 PADDLE_ENV = "sandbox"
 PADDLE_CLIENT_TOKEN = ""
 PADDLE_PRICE = "pri_paid_example"
+PADDLE_PRICE_YEARLY = "pri_paid_yearly_example"
 OWNER_ALERT_EMAIL = "owner@pricedawn.example"
 # Empty: checks fetch the real store. Local e2e runs point it at the fake store server.
 DEV_STORE_ORIGIN = ""
@@ -88,6 +89,8 @@ MAIL_FROM = "PriceDawn <pricedawn@mail.spacesonlabs.com>"
 DEV_ROUTES = "0"
 PADDLE_ENV = "production"
 PADDLE_CLIENT_TOKEN = "live_3b61bcdd32f8d33be89d9c88e97"
-# Empty until .agents/paddle-provision.mjs creates the $4 price: checkout stays off rather than charge an old price.
+# Empty until .agents/paddle-provision.mjs creates the $4/month and $40/year prices: checkout stays off rather than
+# charge an old price.
 PADDLE_PRICE = "pri_01m84q7y99hjwpbad4rpe4mkdz"
+PADDLE_PRICE_YEARLY = ""
 OWNER_ALERT_EMAIL = "alerts@spacesonlabs.com"

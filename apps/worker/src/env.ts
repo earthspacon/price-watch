@@ -7,6 +7,7 @@ export type Env = {
   PADDLE_ENV: string;
   PADDLE_CLIENT_TOKEN?: string;
   PADDLE_PRICE?: string;
+  PADDLE_PRICE_YEARLY?: string;
   OWNER_ALERT_EMAIL?: string;
   DEV_STORE_ORIGIN?: string;
   BETTER_AUTH_SECRET: string;

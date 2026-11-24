@@ -2,7 +2,7 @@ import { PAID_PLAN } from "@price-watch/contract";
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { PLAN_PRICE } from "../pricing/plan";
+import { PLAN_PRICE, PLAN_YEARLY_PRICE } from "../pricing/plan";
 import { LandingPage } from "../site/LandingPage";
 import { LegalPage } from "../site/LegalPage";
 import { NotFoundPage } from "../site/NotFoundPage";
@@ -112,7 +112,9 @@ export function buildPrerenderedFiles(template: string, { beaconToken }: Prerend
     return files;
   }
   return files.map((entry) => {
-    return entry.file.endsWith(".html") ? { ...entry, content: addBeacon({ html: entry.content, token: beaconToken }) } : entry;
+    return entry.file.endsWith(".html")
+      ? { ...entry, content: addBeacon({ html: entry.content, token: beaconToken }) }
+      : entry;
   });
 }
 
@@ -178,12 +180,10 @@ function buildLandingJsonLd() {
         operatingSystem: "Web",
         url: SITE_URL,
         description: LANDING_DESCRIPTION,
-        offers: {
-          "@type": "Offer",
-          price: String(PAID_PLAN.monthlyCents / 100),
-          priceCurrency: "USD",
-          url: `${SITE_URL}/pricing`,
-        },
+        offers: [
+          buildOffer({ name: `${SITE_NAME}, monthly`, cents: PAID_PLAN.monthlyCents }),
+          buildOffer({ name: `${SITE_NAME}, yearly`, cents: PAID_PLAN.yearlyCents }),
+        ],
       },
       {
         "@type": "FAQPage",
@@ -213,7 +213,7 @@ function buildLlms() {
     "> PriceDawn checks your competitors' Shopify product prices every day and emails you what changed each morning at 7:00 in your time zone.",
     "",
     "## Price",
-    `- One plan: ${PLAN_PRICE}/month for up to ${PAID_PLAN.linkLimit.toLocaleString("en-US")} links, cancel anytime`,
+    `- One plan: ${PLAN_PRICE}/month or ${PLAN_YEARLY_PRICE}/year (2 months free) for up to ${PAID_PLAN.linkLimit.toLocaleString("en-US")} links, cancel anytime`,
     "",
     "## Pages",
     ...pages,
@@ -225,4 +225,14 @@ function buildLlms() {
     "- The plan includes the CSV export of the full price history.",
     "",
   ].join("\n");
+}
+
+function buildOffer({ name, cents }: { name: string; cents: number }) {
+  return {
+    "@type": "Offer",
+    name,
+    price: String(cents / 100),
+    priceCurrency: "USD",
+    url: `${SITE_URL}/pricing`,
+  };
 }

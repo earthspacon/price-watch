@@ -1,5 +1,7 @@
 export type Plan = "paid";
 
+export type BillingPeriod = "monthly" | "yearly";
+
 export type SubscriptionStatus = "no_subscription" | "trialing" | "active" | "past_due" | "paused" | "canceled";
 
 export type LinkStatus = "pending" | "ok" | "failed" | "paused";
@@ -65,7 +67,7 @@ export type BillingDto = {
     accountId: string;
     clientToken: string;
     environment: "sandbox" | "production";
-    priceId: string;
+    priceIds: Record<BillingPeriod, string | null>;
   } | null;
 };
 

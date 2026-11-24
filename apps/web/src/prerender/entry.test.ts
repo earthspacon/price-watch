@@ -23,9 +23,10 @@ const LEGAL_PATHS = ["/terms", "/privacy", "/refunds"];
 const PRICE_CHECKER_PATH = "/tools/shopify-price-checker";
 const FOOTER_PATHS = ["/pricing", PRICE_CHECKER_PATH, ...LEGAL_PATHS];
 const PLAN_PRICE = "$4";
+const PLAN_YEARLY_PRICE = "$40";
 const PLAN_LINKS = "500 links";
 // Tier names, a billing-period toggle or "pack" wording would mean more than one plan is on sale again.
-const TIER_WORDS = /\b(Starter|Pro|Solo|Agency|Growth|yearly|annual|annually|pack)\b/i;
+const TIER_WORDS = /\b(Starter|Pro|Solo|Agency|Growth|pack)\b/i;
 const HERO_TEXT =
   "Wake up to your competitors' price changes: a daily email for Shopify store owners who check rival prices by hand.";
 const EXAMPLE_DIGEST_LINE = "Linen Shirt — Blue / M: 24.99 → 19.99 (-5.00, -20.0%)";
@@ -64,13 +65,11 @@ describe("prerendered public site", () => {
     expect(text).toContain("rival.example");
     expect(text).toContain(EXAMPLE_DIGEST_LINE);
     expect(text).toContain("How it works");
-    expect(app?.offers).toEqual(
-      expect.objectContaining({
-        price: String(PAID_PLAN.monthlyCents / 100),
-        priceCurrency: "USD",
-      }),
-    );
-    expect(new Set(text.match(/\$\d+/g))).toEqual(new Set([PLAN_PRICE]));
+    expect(app?.offers).toEqual([
+      expect.objectContaining({ price: String(PAID_PLAN.monthlyCents / 100), priceCurrency: "USD" }),
+      expect.objectContaining({ price: String(PAID_PLAN.yearlyCents / 100), priceCurrency: "USD" }),
+    ]);
+    expect(new Set(text.match(/\$\d+/g))).toEqual(new Set([PLAN_PRICE, PLAN_YEARLY_PRICE]));
     expect(questions.length).toBeGreaterThan(0);
     for (const question of questions) {
       expect(question["@type"]).toBe("Question");
@@ -111,10 +110,18 @@ describe("prerendered public site", () => {
 
     expect(formatDollars(PAID_PLAN.monthlyCents)).toBe(PLAN_PRICE);
     expect(text).toContain(`${PLAN_PRICE} / month · cancel anytime`);
+    expect(text).toContain(`${PLAN_YEARLY_PRICE} / year · 2 months free`);
     expect(text).toContain("Up to 500 product links");
     expect(text).toContain("one product variant");
     expect(text).toMatch(/14[- ]day/);
     expect(text).toContain("Paddle");
+  });
+
+  it("R26: the prerendered pricing page shows Monthly and keeps the $40 yearly price hidden", () => {
+    const html = readPage("/pricing");
+
+    expect(html).toMatch(/<button[^>]*aria-pressed="true"[^>]*>Monthly<\/button>/);
+    expect(html).toMatch(/<div hidden=""[^>]*><p[^>]*>\$40<\/p><p[^>]*>\$40 \/ year · 2 months free<\/p><\/div>/);
   });
 
   it("R27: the Prisync comparison cites its sources", () => {
