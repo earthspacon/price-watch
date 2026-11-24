@@ -89,8 +89,7 @@ MAIL_FROM = "PriceDawn <pricedawn@mail.spacesonlabs.com>"
 DEV_ROUTES = "0"
 PADDLE_ENV = "production"
 PADDLE_CLIENT_TOKEN = "live_3b61bcdd32f8d33be89d9c88e97"
-# Empty until .agents/paddle-provision.mjs creates the $4/month and $40/year prices: checkout stays off rather than
-# charge an old price.
+# The $4/month and $40/year Paddle prices. An empty id keeps that checkout off rather than charge an old price.
 PADDLE_PRICE = "pri_01m84q7y99hjwpbad4rpe4mkdz"
-PADDLE_PRICE_YEARLY = ""
+PADDLE_PRICE_YEARLY = "pri_01m861wrwxsd33qmc5brekgcd0"
 OWNER_ALERT_EMAIL = "alerts@spacesonlabs.com"
