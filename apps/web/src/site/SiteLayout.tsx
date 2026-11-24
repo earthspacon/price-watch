@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { ThemeToggle } from "../shared/ThemeToggle";
-import { SITE_BRAND, SITE_NAME } from "./config";
+import { SITE_BRAND, SITE_NAME, STUDIO_URL } from "./config";
 import { SessionCta, SignInLink } from "./SessionCta";
 
 type NavItem = {
@@ -92,7 +92,13 @@ export const SiteLayout = ({ children }: { children: ReactNode }) => {
       <main className="flex-1">{children}</main>
       <footer className="border-t border-slate-200 bg-slate-50">
         <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-8 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <p>{`${SITE_NAME}, a ${SITE_BRAND} product.`}</p>
+          <p>
+            {SITE_NAME}, a{" "}
+            <a href={STUDIO_URL} className="underline underline-offset-2 hover:text-slate-900">
+              {SITE_BRAND}
+            </a>{" "}
+            product.
+          </p>
           <nav className="flex flex-wrap gap-x-4">
             {FOOTER_ITEMS.map((item) => {
               return (

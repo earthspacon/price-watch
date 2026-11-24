@@ -1,6 +1,7 @@
 export const SITE_NAME = "PriceDawn";
 export const SITE_URL = "https://pricedawn.spacesonlabs.com";
 export const SITE_BRAND = "Spaceson Labs";
+export const STUDIO_URL = "https://spacesonlabs.com";
 export const SELLER_LEGAL_NAME = SITE_BRAND;
 export const CONTACT_EMAIL = "pricedawn@spacesonlabs.com";
 export const OG_IMAGE = {

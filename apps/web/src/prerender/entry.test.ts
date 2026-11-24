@@ -315,3 +315,17 @@ describe("web analytics beacon", () => {
     }
   });
 });
+
+describe("studio link", () => {
+  it("every page footer links Spaceson Labs to the studio site", () => {
+    const pages = buildPrerenderedFiles(TEMPLATE).filter(({ content }) => {
+      return content.includes("<footer");
+    });
+
+    expect(pages.length).toBeGreaterThan(3);
+    for (const { file, content } of pages) {
+      const footer = content.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? "";
+      expect(footer, file).toMatch(/<a [^>]*href="https:\/\/spacesonlabs\.com"[^>]*>Spaceson Labs<\/a>/);
+    }
+  });
+});
