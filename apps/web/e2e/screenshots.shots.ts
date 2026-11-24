@@ -1,4 +1,5 @@
 import { mkdirSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
 import type { Browser } from "playwright";
@@ -6,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { DESKTOP, launchBrowser, MOBILE, openAccount, openSession } from "./helpers";
 
-const SHOTS_DIR = process.env.SHOTS_DIR ?? path.resolve(import.meta.dirname, "../../../.agents/reports/shots");
+const SHOTS_DIR = process.env.SHOTS_DIR ?? path.join(tmpdir(), "pricedawn-shots");
 const PAGES = [
   { name: "home", path: "/" },
   { name: "pricing", path: "/pricing" },

@@ -39,7 +39,7 @@ async function headerBoxes({ page }: { page: Page }) {
   });
 }
 
-// Everything a finger has to hit, measured the way the audit did (`.agents/audit/2026-11-23/measure.ts`).
+// Everything a finger has to hit: visible buttons, links and inputs smaller than the minimum tap size.
 async function smallTargets({ page }: { page: Page }) {
   return page.evaluate((min) => {
     const small: string[] = [];

@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import type { AddLinksResult, Plan, SubscriptionStatus } from "@price-watch/contract";
 import { chromium, type Browser, type BrowserContext, type Page, type Route } from "playwright";
 
-import { CHROME_PATH, E2E_URL } from "./config";
+import { findChromePath, E2E_URL } from "./config";
 
 export const DESKTOP = { width: 1440, height: 900 };
 export const MOBILE = { width: 390, height: 844 };
@@ -43,7 +43,7 @@ export function productUrl({ host, handle, variantId }: { host: string; handle: 
 }
 
 export async function launchBrowser() {
-  return chromium.launch({ executablePath: CHROME_PATH });
+  return chromium.launch({ executablePath: findChromePath() });
 }
 
 export async function openSession({
